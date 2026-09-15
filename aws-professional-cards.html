@@ -279,6 +279,25 @@ const CLUSTERS = [
     ]
   },
   {
+    title:"IAM Access Analyzer",
+    key:"org",
+    dom:"Organizational complexity",
+    axis:"Does it reason about the <em>policy</em>, or look at recorded <em>activity</em>? &mdash; and is it reporting exposure, cleaning up permissions, or gating a change?",
+    col:"What it analyzes",
+    rows:[
+      ["External access findings","The <b>resource policy itself</b>, by automated reasoning &mdash; not logs","<em>&ldquo;Which buckets, roles, KMS keys, queues or secrets can be reached from outside?&rdquo;</em> &mdash; it proves the answer from the policy, so it finds exposure nobody has exploited yet; CloudTrail only shows access that already happened"],
+      ["<b>Zone of trust</b>","The boundary you choose when creating the analyzer &mdash; <b>account</b> or <b>organization</b>","<em>The most-tested detail here: with an organization zone of trust, sharing between accounts inside the org is not a finding; with an account zone of trust, that same sharing is</em> &mdash; so &ldquo;we're buried in findings for legitimate internal sharing&rdquo; means the analyzer was created at account scope and should be recreated at org scope"],
+      ["Unused access findings","Recorded <b>activity</b> &mdash; roles, credentials and permissions unused through the tracking period","<em>&ldquo;Drive least privilege across hundreds of roles&rdquo;, &ldquo;find stale roles and unused access keys&rdquo;</em> &mdash; a distinct analyzer type, priced separately; answering this with the external-access analyzer is the trap"],
+      ["Policy validation","A policy <b>you wrote</b>, against IAM grammar and best practice","<em>&ldquo;Catch overly permissive wildcards or a missing condition before the policy ships&rdquo;</em> &mdash; returns errors, security warnings and suggestions; in the console editor and via the ValidatePolicy API"],
+      ["Policy generation","<b>CloudTrail history</b> for one principal, up to ~90 days","<em>&ldquo;We don't know what permissions this role actually needs&rdquo;</em> &mdash; builds a least-privilege policy from what the principal really did; the one feature here that depends on CloudTrail, so it produces nothing useful for a role with no history"],
+      ["Custom policy checks","A <em>proposed</em> policy against a reference policy","<em>&ldquo;Fail the pipeline if this change grants more access than before&rdquo;</em> &mdash; CheckNoNewAccess, CheckAccessNotGranted, CheckNoPublicAccess; the CI/CD gate, and the only preventive item in this set"],
+      ["Access preview","A policy change <b>before</b> it is deployed","<em>&ldquo;Will this bucket policy expose anything externally?&rdquo;</em> &mdash; the proactive counterpart to external access findings"],
+      ["Archive rules","Nothing &mdash; they suppress findings you already accept","<em>&ldquo;That bucket is public deliberately and keeps alerting&rdquo;</em> &mdash; noise control; it hides the finding, it doesn't change access"],
+      ["Access Advisor / last-accessed data","The older, coarser IAM feature","<em>Service-level last-accessed info per principal</em> &mdash; overlaps with unused access findings but is per-principal and shallower; a plausible distractor when the question wants org-wide least-privilege cleanup"],
+      ["Analyzer placement","Neither &mdash; a deployment detail","<em>&ldquo;Findings are missing for one region&rdquo;</em> &mdash; analyzers are regional, so you need one per region you care about; run the org-scoped analyzer from the security account"]
+    ]
+  },
+  {
     title:"Multi-account setup &amp; guardrails",
     key:"org",
     dom:"Organizational complexity",
