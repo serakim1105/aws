@@ -236,7 +236,8 @@ const CLUSTERS = [
       ["Policy generation","Builds a policy from <b>CloudTrail</b> activity, up to <b>90 days</b> back."],
       ["Assuming a role vs. a resource-based policy","Assume a role and its permissions <b>replace</b> yours; a resource-based policy grants access while you <b>keep</b> your own, so work that needs both sides at once wants a resource-based policy."],
       ["Third-party access &mdash; <b>sts:AssumeRole</b> + external ID","The vendor's AWS account is the principal in your role's trust policy, and that policy requires an <b>ExternalId</b> you issue them; they pass it on the AssumeRole call. Prevents the confused deputy problem."],
-      ["STS (Security Token Service)","<b>AssumeRole</b> (cross-account, role switching), <b>AssumeRoleWithSAML</b> (enterprise IdP &mdash; AD FS, Okta), <b>AssumeRoleWithWebIdentity</b> (Amazon Cognito, Facebook, Google &mdash; AWS recommends Cognito: supports MFA, anonymous users, data sync), <b>GetSessionToken</b> (existing IAM user, MFA), <b>GetFederationToken</b> (custom identity broker). The three <b>AssumeRole*</b> calls return credentials for a role; the two <b>Get*</b> calls do not."]
+      ["STS (Security Token Service)","<b>AssumeRole</b> (cross-account, role switching), <b>AssumeRoleWithSAML</b> (enterprise IdP &mdash; AD FS, Okta), <b>AssumeRoleWithWebIdentity</b> (Amazon Cognito, Facebook, Google &mdash; AWS recommends Cognito: supports MFA, anonymous users, data sync), <b>GetSessionToken</b> (existing IAM user, MFA), <b>GetFederationToken</b> (custom identity broker). The three <b>AssumeRole*</b> calls return credentials for a role; the two <b>Get*</b> calls do not."],
+      ["AD FS (Active Directory Federation Services)","Provides SSO across applications, issuing <b>SAML</b> assertions to third-party service providers &mdash; AWS Management Console, Dropbox, Office 365."]
     ]
   }
 ];
