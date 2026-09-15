@@ -23,6 +23,7 @@
     --chip-ink:#FFFFFF;
 
     --c-org:#B81065;
+    --c-govern:#7A3F8C;
     --c-net:#6B36D6;
     --c-dr:#C01E36;
     --c-data:#20629F;
@@ -40,16 +41,16 @@
       --ground:#0D1117; --surface:#151B24; --ink:#E4E9F1; --muted:#96A1B4;
       --faint:#6C7789; --line:#242C38; --line-soft:#1D242E;
       --accent:#F0912F; --focus:#6BA6E8; --chip-ink:#0D1117;
-      --c-org:#F5629F; --c-net:#A98BFF; --c-dr:#F2647A; --c-data:#5BA3E8;
-      --c-ops:#3ECBD4; --c-cost:#A3C93F; --c-migrate:#D9A63C;
+      --c-org:#F5629F; --c-govern:#C081D6; --c-net:#A98BFF; --c-dr:#F2647A;
+      --c-data:#5BA3E8; --c-ops:#3ECBD4; --c-cost:#A3C93F; --c-migrate:#D9A63C;
     }
   }
   :root[data-theme="dark"]{
     --ground:#0D1117; --surface:#151B24; --ink:#E4E9F1; --muted:#96A1B4;
     --faint:#6C7789; --line:#242C38; --line-soft:#1D242E;
     --accent:#F0912F; --focus:#6BA6E8; --chip-ink:#0D1117;
-    --c-org:#F5629F; --c-net:#A98BFF; --c-dr:#F2647A; --c-data:#5BA3E8;
-    --c-ops:#3ECBD4; --c-cost:#A3C93F; --c-migrate:#D9A63C;
+    --c-org:#F5629F; --c-govern:#C081D6; --c-net:#A98BFF; --c-dr:#F2647A;
+    --c-data:#5BA3E8; --c-ops:#3ECBD4; --c-cost:#A3C93F; --c-migrate:#D9A63C;
   }
 
   *{box-sizing:border-box;}
@@ -225,7 +226,7 @@
 <script>
 const CLUSTERS = [
   {
-    title:"IAM",
+    title:"Identity and Federation",
     key:"org",
     axis:"",
     col:"What it is",
@@ -241,6 +242,15 @@ const CLUSTERS = [
       ["AWS Managed Microsoft AD","Actual domain controllers running in AWS. Works on its own, or with on-prem AD over <b>Direct Connect or Site-to-Site VPN</b>. Trust can go <b>both ways</b>; replication is <b>not</b> included by default. If the VPN or DX goes down you lose the on-prem side &mdash; the fix is an on-prem AD replica on <b>EC2</b> in AWS, with two-way trust to and from the managed directory."],
       ["AD Connector","A directory <b>gateway</b> that redirects requests to on-prem AD &mdash; on-prem only, proxied from AWS. <b>No caching, no SQL Server, no trust relationship.</b> Still requires Direct Connect or VPN, and if that connection goes down you have no AD."],
       ["Simple AD","Cheap. <b>No MFA, no SQL Server, no AWS SSO (IAM Identity Center), no trust relationship.</b> Sized for 500 users (Small) up to 5,000 (Large)."]
+    ]
+  },
+  {
+    title:"Organizations",
+    key:"govern",
+    axis:"",
+    col:"What it is",
+    rows:[
+      ["SCP scope","Applies to member accounts including their <b>root user</b> &mdash; the only way to constrain root, which ignores IAM policies and permission boundaries. The <b>management account is fully exempt</b>, even with the SCP attached at the organization root. <b>Service-linked roles</b> are exempt everywhere. Caps permissions, never grants them."]
     ]
   }
 ];
