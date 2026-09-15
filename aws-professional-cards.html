@@ -293,7 +293,7 @@ const CLUSTERS = [
       ["WAF logging","Three destinations: <b>CloudWatch Logs</b> log group &mdash; 5 MB per second. <b>S3</b> bucket &mdash; 5 minute interval. <b>Kinesis Data Firehose</b> &mdash; limited by Firehose quotas."],
       ["AWS Firewall Manager","Applies a common <b>security policy</b> &mdash; WAF rules, Shield Advanced, security groups, Network Firewall, Route 53 Resolver DNS Firewall &mdash; across <b>every account in an Organization</b>. Policies are created at the <b>Region</b> level and applied automatically to <b>new resources and future accounts</b>, which is what makes it the compliance answer rather than configuring each account yourself."],
       ["Security groups &mdash; allow only","Security groups have <b>allow rules only</b>; there is no deny rule. Anything not matched by an allow is implicitly denied, and because they are <b>stateful</b>, return traffic is permitted automatically. To <b>explicitly block</b> an IP you need a <b>NACL</b>, which is stateless and does support deny."],
-      ["Amazon Inspector","Only for <b>EC2, container images (ECR), and Lambda functions</b>. Scans for <b>CVEs</b> and <b>network reachability</b>. Reports in <b>AWS Security Hub</b> and sends findings to <b>EventBridge</b>."]
+      ["Amazon Inspector","Only for <b>EC2, container images (ECR), and Lambda functions</b>. Scans for <b>CVEs</b> and <b>network reachability</b>. Runs when <b>inventory or CVE updates</b>. Reports in <b>AWS Security Hub</b> and sends findings to <b>EventBridge</b>."]
     ]
   }
 ];
