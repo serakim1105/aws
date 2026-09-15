@@ -265,7 +265,10 @@ const CLUSTERS = [
     col:"What it is",
     rows:[
       ["CloudTrail","Records API activity. <b>Management events</b> &mdash; RunInstances or AttachRolePolicy &mdash; are <b>logged by default</b>. <b>Data events</b> &mdash; S3 object-level, Lambda Invoke, DynamoDB item-level &mdash; are <b>not enabled by default</b>; you turn them on deliberately, and they cost real money because the volume is enormous. Create a trail to deliver to S3 or CloudWatch Logs for anything beyond 90 days; an organization trail covers every account."],
-      ["CloudTrail Insights","Detects <b>unusual API activity</b> against a learned baseline of management events. Two types: API <b>call rate</b> and API <b>error rate</b>. Enabled explicitly on a trail, charged separately, and needs time to build the baseline before it reports anything. Not known-bad threat intelligence, which is GuardDuty. Examples (inaccurate resource provisioning, bursts of IAM actions, hitting service limits, gaps in management activity)"]
+      ["CloudTrail Insights","Detects <b>unusual API activity</b> against a learned baseline of management events. Two types: API <b>call rate</b> and API <b>error rate</b>. Enabled explicitly on a trail, charged separately, and needs time to build the baseline before it reports anything. Not known-bad threat intelligence, which is GuardDuty. Examples (inaccurate resource provisioning, bursts of IAM actions, hitting service limits, gaps in management activity)"],
+      ["KMS customer managed key","Symmetric keys are <b>AES-256</b>. You create and control it. Rotation is <b>optional</b> and yours to set &mdash; 365 days by default once enabled, configurable 90&ndash;2560, plus on-demand. Key policy <b>viewable and editable</b>. Usage appears in your CloudTrail."],
+      ["KMS AWS managed key","Created for you by an AWS service &mdash; aws/s3, aws/ebs. Rotates automatically every <b>365 days</b> and you cannot change or disable that. Key policy <b>viewable but not editable</b>. Usage appears in your CloudTrail."],
+      ["KMS AWS owned key","Lives <b>outside your account</b> and is shared across many accounts. Rotation is entirely AWS's. Key policy <b>neither viewable nor editable</b>. Usage does <b>not</b> appear in your CloudTrail, so its use cannot be audited."]
     ]
   }
 ];
