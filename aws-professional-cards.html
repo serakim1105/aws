@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AWS Professional Cards</title>
-<meta name="description" content="AWS SAP-C02 study reference: contrast sets at professional depth, each with one deciding axis.">
+<meta name="description" content="AWS SAP-C02 study notes, built up section by section while studying.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
@@ -105,10 +105,6 @@
   .cl-head h2{
     font-family:var(--fs-display);font-weight:600;font-size:1.22rem;
     margin:0;flex:1;min-width:12ch;
-  }
-  .dom{
-    font-family:var(--fs-mono);font-size:.62rem;letter-spacing:.08em;
-    text-transform:uppercase;color:var(--faint);
   }
   .axis{
     margin:.5rem 0 .9rem;font-size:.85rem;color:var(--muted);
@@ -211,7 +207,7 @@
   <header class="mast">
     <div class="brand">
       <h1>AWS Professional Cards</h1>
-      <p><span id="count">0</span> contrast sets &middot; one deciding axis each</p>
+      <p><span id="count">0</span> sections &middot; SAP-C02</p>
     </div>
     <div class="controls">
       <button class="toggle" id="blank" aria-pressed="false"><span class="dot"></span>Blank mode</button>
@@ -219,7 +215,7 @@
     </div>
   </header>
 
-  <p class="hint" id="hint">Professional-level discrimination only &mdash; the associate service catalog and its contrast sets live in the other two decks, and nothing is repeated here. Turn on <b>Blank mode</b> to hide the names and work backward from the behavior.</p>
+  <p class="hint" id="hint">Built up section by section while studying &mdash; only what has actually been covered. Turn on <b>Blank mode</b> to hide the names and work backward from the behavior.</p>
 
   <div class="stack" id="stack"></div>
 
@@ -232,467 +228,16 @@
 <script>
 const CLUSTERS = [
   {
-    title:"Policy evaluation order",
+    title:"IAM",
     key:"org",
-    dom:"Organizational complexity",
-    axis:"Which policy type can actually GRANT, and which can only take away? &mdash; an explicit Deny anywhere ends the evaluation immediately",
-    col:"Grants or filters",
+    axis:"",
+    col:"What it is",
     rows:[
-      ["Explicit Deny","Ends evaluation &mdash; nothing overrides it","<em>A Deny in any policy type wins, full stop</em> &mdash; the single most common trap: an option that adds an Allow to &ldquo;fix&rdquo; a Deny is always wrong"],
-      ["SCP","<b>Filters only</b>, on the principal side","<em>Org-wide ceiling on member accounts</em> &mdash; never grants anything, so &ldquo;attach an SCP to give access&rdquo; is wrong; does not apply to the management account, nor to service-linked roles"],
-      ["RCP","<b>Filters only</b>, on the <em>resource</em> side","<em>&ldquo;No one outside the org may read this bucket, no matter what its bucket policy says&rdquo;</em> &mdash; the org-wide ceiling SCPs can't give you; narrower service support than SCPs (S3, STS, KMS, SQS, Secrets Manager)"],
-      ["Identity-based policy","<b>Grants</b> &mdash; attached to a user or role","<em>The normal way permission arrives</em>"],
-      ["Resource-based policy","<b>Grants</b> &mdash; and names the principal itself","<em>Same account: an Allow here alone is enough. Cross-account: you need an Allow on BOTH sides</em> &mdash; that asymmetry is the most-tested detail in the whole domain"],
-      ["Permissions boundary","<b>Filters only</b>","<em>&ldquo;Let developers create roles, but nothing more powerful than X&rdquo;</em> &mdash; the safe-IAM-delegation answer; caps the maximum, grants nothing"],
-      ["Session policy","<b>Filters only</b>, passed at AssumeRole","<em>Narrow a role at hand-out time</em> &mdash; can only subtract from the role's own policy"],
-      ["IAM Access Analyzer","Neither &mdash; it reports the outcome","<em>&ldquo;Which resources are reachable from outside the org / which permissions are unused&rdquo;</em> &mdash; findings and policy validation, not an enforcement point"]
-    ]
-  },
-  {
-    title:"Cross-account access patterns",
-    key:"org",
-    dom:"Organizational complexity",
-    axis:"Does the caller keep its own identity or swap into yours &mdash; and is IAM or the network doing the work?",
-    col:"How access arrives",
-    rows:[
-      ["AssumeRole (STS)","Caller <b>swaps identity</b>","<em>Trust policy names who may assume; caller gets temporary credentials</em> &mdash; the default cross-account answer when the caller needs many permissions"],
-      ["Resource-based policy","Caller <b>keeps its identity</b>","<em>Bucket / SQS / SNS / KMS / Lambda policy naming the external principal</em> &mdash; no role assumption step; only works on services that support one"],
-      ["RAM","<b>Shares the resource</b> itself","<em>Subnets, Transit Gateway, Route 53 Resolver rules, License Manager</em> &mdash; consumers use it in place; nothing is copied and no IAM role is assumed"],
-      ["aws:PrincipalOrgID","A <em>condition</em>, not a mechanism","<em>&ldquo;Trust every account in the org without enumerating account IDs&rdquo;</em> &mdash; the maintenance-free answer when accounts are added constantly"],
-      ["PrivateLink","<b>Network</b>, not IAM","<em>Expose one service to many consumer VPCs over an ENI</em> &mdash; no CIDR coordination, no transitive routing, scales to thousands; unidirectional by design"],
-      ["VPC Peering / TGW","<b>Network routing</b> between whole VPCs","<em>Broad network reachability</em> &mdash; needs non-overlapping CIDRs and route-table upkeep; loses to PrivateLink whenever the requirement is &ldquo;expose a single service&rdquo;"]
-    ]
-  },
-  {
-    title:"Confused deputy &amp; third-party access",
-    key:"org",
-    dom:"Organizational complexity",
-    axis:"Which condition key closes which specific hole?",
-    col:"What it guards against",
-    rows:[
-      ["External ID","A SaaS vendor reusing your role ARN <em>on behalf of a different customer</em>","<em>&ldquo;We hired a third-party monitoring/FinOps vendor&rdquo;</em> &mdash; you issue a unique ExternalId, their assume-role call must present it; the canonical third-party answer"],
-      ["aws:SourceArn","An AWS <em>service principal</em> being induced to act on a resource that isn't yours","<em>&ldquo;CloudTrail / SNS / Config can assume this role &mdash; but only for this specific resource&rdquo;</em> &mdash; pins the triggering resource"],
-      ["aws:SourceAccount","The same problem, at account granularity","<em>Use when the ARN isn't known up front</em> &mdash; often paired with SourceArn"],
-      ["Service-linked role","Nothing to configure &mdash; AWS owns both sides","<em>You cannot edit the trust policy</em> &mdash; so &ldquo;tighten the service-linked role's trust&rdquo; is a wrong option"],
-      ["aws:PrincipalOrgID","Anyone outside the organization","<em>An org boundary, not a confused-deputy fix</em> &mdash; don't swap it in when the scenario names an external vendor"],
-      ["Permissions boundary","The role being widened later by someone else","<em>Limits blast radius over time</em> &mdash; not an access-grant condition"]
-    ]
-  },
-  {
-    title:"IAM Access Analyzer",
-    key:"org",
-    dom:"Organizational complexity",
-    axis:"Does it reason about the <em>policy</em>, or look at recorded <em>activity</em>? &mdash; and is it reporting exposure, cleaning up permissions, or gating a change?",
-    col:"What it analyzes",
-    rows:[
-      ["External access findings","The <b>resource policy itself</b>, by automated reasoning &mdash; not logs","<em>&ldquo;Which buckets, roles, KMS keys, queues or secrets can be reached from outside?&rdquo;</em> &mdash; it proves the answer from the policy, so it finds exposure nobody has exploited yet; CloudTrail only shows access that already happened"],
-      ["<b>Zone of trust</b>","The boundary you choose when creating the analyzer &mdash; <b>account</b> or <b>organization</b>","<em>The most-tested detail here: with an organization zone of trust, sharing between accounts inside the org is not a finding; with an account zone of trust, that same sharing is</em> &mdash; so &ldquo;we're buried in findings for legitimate internal sharing&rdquo; means the analyzer was created at account scope and should be recreated at org scope"],
-      ["Unused access findings","Recorded <b>activity</b> &mdash; roles, credentials and permissions unused through the tracking period","<em>&ldquo;Drive least privilege across hundreds of roles&rdquo;, &ldquo;find stale roles and unused access keys&rdquo;</em> &mdash; a distinct analyzer type, priced separately; answering this with the external-access analyzer is the trap"],
-      ["Policy validation","A policy <b>you wrote</b>, against IAM grammar and best practice","<em>&ldquo;Catch overly permissive wildcards or a missing condition before the policy ships&rdquo;</em> &mdash; returns errors, security warnings and suggestions; in the console editor and via the ValidatePolicy API"],
-      ["Policy generation","<b>CloudTrail history</b> for one principal, up to ~90 days","<em>&ldquo;We don't know what permissions this role actually needs&rdquo;</em> &mdash; builds a least-privilege policy from what the principal really did; the one feature here that depends on CloudTrail, so it produces nothing useful for a role with no history"],
-      ["Custom policy checks","A <em>proposed</em> policy against a reference policy","<em>&ldquo;Fail the pipeline if this change grants more access than before&rdquo;</em> &mdash; CheckNoNewAccess, CheckAccessNotGranted, CheckNoPublicAccess; the CI/CD gate, and the only preventive item in this set"],
-      ["Access preview","A policy change <b>before</b> it is deployed","<em>&ldquo;Will this bucket policy expose anything externally?&rdquo;</em> &mdash; the proactive counterpart to external access findings"],
-      ["Archive rules","Nothing &mdash; they suppress findings you already accept","<em>&ldquo;That bucket is public deliberately and keeps alerting&rdquo;</em> &mdash; noise control; it hides the finding, it doesn't change access"],
-      ["Access Advisor / last-accessed data","The older, coarser IAM feature","<em>Service-level last-accessed info per principal</em> &mdash; overlaps with unused access findings but is per-principal and shallower; a plausible distractor when the question wants org-wide least-privilege cleanup"],
-      ["Analyzer placement","Neither &mdash; a deployment detail","<em>&ldquo;Findings are missing for one region&rdquo;</em> &mdash; analyzers are regional, so you need one per region you care about; run the org-scoped analyzer from the security account"]
-    ]
-  },
-  {
-    title:"Multi-account setup &amp; guardrails",
-    key:"org",
-    dom:"Organizational complexity",
-    axis:"Does it provision, enforce, or only report &mdash; and does it reach accounts and resources that already exist?",
-    col:"Role",
-    rows:[
-      ["Control Tower","<b>Provisions</b> a governed landing zone","<em>&ldquo;Set up multi-account from scratch with best practices&rdquo;</em> &mdash; Account Factory vends accounts; controls come in preventive (SCP), detective (Config rule) and proactive (CloudFormation hook) flavors"],
-      ["Customizations for Control Tower (CfCT)","<b>Provisions</b> on account lifecycle events","<em>&ldquo;Every new account must automatically get our baseline stack and SCPs&rdquo;</em> &mdash; the answer when Account Factory alone isn't enough"],
-      ["CloudFormation StackSets","<b>Provisions</b> across accounts and regions","<em>Service-managed permissions + auto-deployment covers newly added accounts automatically</em> &mdash; the plain-Organizations answer when Control Tower isn't in play"],
-      ["Service Catalog","<b>Provisions</b>, but end-user driven","<em>&ldquo;Let teams self-serve only approved, pre-parameterized products&rdquo;</em> &mdash; a storefront, not a guardrail"],
-      ["SCP / RCP","<b>Enforces</b>, preventively","<em>Blocks the API call outright</em> &mdash; no inventory, no evaluation engine, and no effect on pre-existing resources"],
-      ["Config + conformance packs + aggregator","<b>Reports</b>, and can remediate","<em>&ldquo;Which resources are non-compliant, including ones created before we started?&rdquo;</em> &mdash; the org-wide aggregator is what turns per-account Config into one view"],
-      ["Firewall Manager","<b>Enforces</b> network/WAF policy org-wide","<em>&ldquo;Every ALB in every account must have this WAF rule group&rdquo;</em> &mdash; applies and re-applies; needs Organizations"],
-      ["Delegated administrator","Neither &mdash; a <em>placement</em> decision","<em>Run GuardDuty / Security Hub / Config / Access Analyzer from a security account, not the management account</em> &mdash; the recommended pattern, and a frequent &ldquo;what's wrong with this design&rdquo; answer"]
-    ]
-  },
-  {
-    title:"Workforce identity at scale",
-    key:"org",
-    dom:"Organizational complexity",
-    axis:"How do you avoid creating the same role in a hundred accounts by hand?",
-    col:"Scaling mechanism",
-    rows:[
-      ["Identity Center permission sets","One definition, assigned to many accounts","<em>&ldquo;Same engineer access across 200 accounts, managed centrally&rdquo;</em> &mdash; Identity Center materializes the roles for you; replaces hand-built per-account roles"],
-      ["ABAC (tag-based access)","One policy, behavior varies by tag","<em>&ldquo;Access must follow project/cost-center membership and not need a policy edit per team&rdquo;</em> &mdash; aws:PrincipalTag vs resource tag; the &ldquo;scales without new policies&rdquo; answer"],
-      ["External IdP via SAML / OIDC","Identities stay in Okta / Entra ID / AD","<em>&ldquo;Don't duplicate the corporate directory&rdquo;</em> &mdash; group membership drives permission set or role assignment"],
-      ["SCIM provisioning","Keeps users and groups in sync automatically","<em>&ldquo;Leavers must lose access without a manual step&rdquo;</em> &mdash; the deprovisioning half that federation alone doesn't solve"],
-      ["IAM roles + trust policies","Per-account, hand-managed","<em>Works, but the sprawl is the thing the question is usually asking you to eliminate</em>"],
-      ["IAM users with long-lived keys","No scaling story at all","<em>Essentially always the wrong answer at this level</em> &mdash; the fix is a role, Identity Center, or IAM Roles Anywhere for outside workloads"]
-    ]
-  },
-  {
-    title:"Hybrid DNS resolution",
-    key:"net",
-    dom:"New solutions",
-    axis:"Which direction is the query travelling &mdash; on-prem asking AWS, or AWS asking on-prem?",
-    col:"Direction",
-    rows:[
-      ["Resolver <b>inbound</b> endpoint","On-prem &rarr; AWS","<em>&ldquo;Our data-center servers can't resolve names in a private hosted zone&rdquo;</em> &mdash; on-prem DNS forwards to the endpoint's IPs"],
-      ["Resolver <b>outbound</b> endpoint + forwarding rule","AWS &rarr; on-prem","<em>&ldquo;EC2 can't resolve corp.example.com&rdquo;</em> &mdash; the rule says which domain goes where; the endpoint is just the exit door"],
-      ["Both endpoints","Two-way resolution","<em>The usual real answer when the scenario describes name resolution failing in both directions</em>"],
-      ["Private hosted zone + RAM-shared rules","One zone or ruleset, many VPCs","<em>&ldquo;Don't rebuild the same forwarding rules in every account&rdquo;</em> &mdash; share the Resolver rule via RAM, associate the PHZ with each VPC"],
-      ["Resolver DNS Firewall","Filters the query, doesn't route it","<em>Block exfiltration to known-bad domains / allow-list only approved ones</em> &mdash; a security control, never the resolution fix"],
-      ["enableDnsHostnames / enableDnsSupport","VPC attributes","<em>If these are off, nothing else works</em> &mdash; the &ldquo;why is resolution broken at all&rdquo; root cause, especially with peering"]
-    ]
-  },
-  {
-    title:"Route 53 routing policies",
-    key:"net",
-    dom:"New solutions",
-    axis:"What decides which record gets returned &mdash; and does it fail over on its own?",
-    col:"Decision input",
-    rows:[
-      ["Weighted","A number you assign","<em>Canary or blue/green at the DNS layer, A/B split</em> &mdash; the &ldquo;send 10% to the new stack&rdquo; answer"],
-      ["Latency-based","Measured client-to-region latency","<em>&ldquo;Send users to the fastest region&rdquo;</em> &mdash; not the nearest by distance, which is why geolocation is the wrong pick here"],
-      ["Geolocation","The user's <em>location</em>","<em>Compliance, data residency, language</em> &mdash; answers &ldquo;must be served from the EU&rdquo;; has no idea about latency"],
-      ["Geoproximity + bias","Distance to your resources, shiftable","<em>&ldquo;Shift more traffic to a region without moving anything&rdquo;</em> &mdash; bias is the tell; configured through Traffic Flow"],
-      ["Failover","A health check","<em>Active/passive DR</em> &mdash; the only policy that is <em>about</em> failing over"],
-      ["Multivalue answer","Up to eight healthy records, client picks","<em>Cheap health-checked spreading without a load balancer</em> &mdash; not a load balancer substitute for real balancing"],
-      ["Calculated / string-match health checks","Combine child checks, or read the response body","<em>&ldquo;Only fail over if the app is truly broken, not just one dependency&rdquo;</em> &mdash; string match catches a 200 that says ERROR"]
-    ]
-  },
-  {
-    title:"Transit Gateway &amp; large-scale VPC design",
-    key:"net",
-    dom:"Organizational complexity",
-    axis:"How do you segment traffic, and where does asymmetry break a stateful device?",
-    col:"What it controls",
-    rows:[
-      ["TGW route tables","Segmentation","<em>&ldquo;Prod must not reach Dev, but both reach Shared Services&rdquo;</em> &mdash; separate route tables with selective associations/propagations; not SGs, not NACLs"],
-      ["<b>Appliance mode</b>","Flow symmetry","<em>&ldquo;Traffic through our inspection appliance is being dropped intermittently across AZs&rdquo;</em> &mdash; keeps both directions of a flow on the same appliance; the fix almost no other option can be"],
-      ["TGW peering","Cross-region, cross-account hub link","<em>Global backbone between hubs</em> &mdash; no transitive routing <em>through</em> a peering; you must route explicitly"],
-      ["Cloud WAN","Policy-driven global network","<em>&ldquo;Manage segmentation across many regions and on-prem from one policy document&rdquo;</em> &mdash; the step above hand-built TGW peering meshes"],
-      ["VPC sharing (RAM)","One VPC, many accounts","<em>&ldquo;Stop burning a VPC and CIDR per team&rdquo;</em> &mdash; accounts own resources inside shared subnets; sidesteps peering entirely"],
-      ["PrivateLink","Service exposure, not connectivity","<em>Overlapping CIDRs are fine, because nothing is routed</em> &mdash; the answer when CIDRs collide and only one service must be reachable"],
-      ["Direct Connect Gateway + transit VIF","On-prem into the hub","<em>Attach DX to TGW rather than to individual VGWs</em> &mdash; one circuit, many VPCs, many regions"]
-    ]
-  },
-  {
-    title:"Direct Connect resiliency &amp; BGP steering",
-    key:"net",
-    dom:"New solutions",
-    axis:"Which failure are you buying out of &mdash; a link, a device, a whole location? &mdash; and what steers traffic once you have two paths?",
-    col:"What it protects / does",
-    rows:[
-      ["LAG","Bundles links <em>at one location</em>","<em>More bandwidth and link-level redundancy</em> &mdash; does <b>not</b> survive the location or router failing; a classic partial-credit distractor"],
-      ["Two connections, two locations, two devices","Location failure","<em>AWS's &ldquo;maximum resiliency&rdquo; posture</em> &mdash; what &ldquo;mission critical, no single point of failure&rdquo; means"],
-      ["DX + backup Site-to-Site VPN","Cheap fallback","<em>&ldquo;Must stay up, but a second circuit is too expensive / too slow to provision&rdquo;</em> &mdash; lower bandwidth on failover is the accepted trade"],
-      ["BGP AS_PATH prepending / local preference","<b>Steers</b> traffic between existing paths","<em>&ldquo;Both circuits are up but we want one preferred&rdquo;</em> &mdash; AWS prefers the more specific prefix first, then shorter AS_PATH outbound; local pref influences your side"],
-      ["MACsec","Encrypts the <em>link</em> itself","<em>Layer-2 encryption on a dedicated connection</em> &mdash; the alternative to running a VPN over DX for encryption-in-transit wording"],
-      ["SiteLink","DX location &harr; DX location","<em>&ldquo;Route branch-to-branch over the AWS backbone&rdquo;</em> &mdash; on-prem sites talking to each other, not to a VPC"],
-      ["VIF type","Where the circuit lands","<em>Private VIF &rarr; VGW/DXGW; Transit VIF &rarr; DXGW to TGW; Public VIF &rarr; AWS public endpoints</em> &mdash; picking the wrong one is a common trap"]
-    ]
-  },
-  {
-    title:"IP exhaustion &amp; overlapping CIDRs",
-    key:"net",
-    dom:"Continuous improvement",
-    axis:"Can you renumber, or must you translate / avoid routing altogether?",
-    col:"Approach",
-    rows:[
-      ["Secondary CIDR blocks","Grow the VPC in place","<em>&ldquo;Out of IPs but the VPC must stay&rdquo;</em> &mdash; add a range and new subnets; cannot shrink or change the primary"],
-      ["<b>Private NAT Gateway</b>","Translate, don't renumber","<em>&ldquo;Two merged companies both use 10.0.0.0/16 and must communicate&rdquo;</em> &mdash; NAT behind TGW so overlapping ranges never meet; the marquee overlapping-CIDR answer"],
-      ["PrivateLink","Avoid routing entirely","<em>Overlap is irrelevant because only an ENI is exposed</em> &mdash; best when just one service must cross"],
-      ["IPAM","Prevent the problem","<em>&ldquo;Teams keep allocating conflicting CIDRs&rdquo;</em> &mdash; plan, allocate and monitor address space org-wide; a governance answer, not a connectivity fix"],
-      ["IPv6 / egress-only IGW","Sidestep scarcity","<em>Address space stops being the constraint</em> &mdash; dual-stack migration; note NAT Gateway is IPv4-only"],
-      ["Prefix delegation / larger subnets","Relieve per-ENI pressure","<em>EKS pods exhausting subnet IPs</em> &mdash; the container-specific flavor of this problem"]
-    ]
-  },
-  {
-    title:"Centralized traffic inspection",
-    key:"net",
-    dom:"New solutions",
-    axis:"Inline enforcement or out-of-band visibility &mdash; and does the packet arrive unchanged?",
-    col:"Position in the path",
-    rows:[
-      ["Gateway Load Balancer","<b>Inline</b>, transparent","<em>Insert a third-party firewall/IDS fleet without changing addressing</em> &mdash; GENEVE 6081; scales the appliances behind it"],
-      ["Network Firewall","<b>Inline</b>, AWS-managed","<em>Stateful rules, IPS signatures, domain filtering at the VPC edge</em> &mdash; no appliance fleet to run"],
-      ["Inspection VPC behind TGW","Inline, <b>centralized</b>","<em>&ldquo;All inter-VPC and egress traffic must pass one inspection point&rdquo;</em> &mdash; pair with appliance mode or you'll chase asymmetric drops"],
-      ["VPC Traffic Mirroring","<b>Out of band</b>, full packet copy","<em>&ldquo;Deep packet analysis / forensics without touching the traffic&rdquo;</em> &mdash; copies to an ENI; cannot block anything"],
-      ["VPC Flow Logs","Out of band, <b>metadata only</b>","<em>&ldquo;Which IP talked to which port, and was it accepted&rdquo;</em> &mdash; no payload, so wrong for &ldquo;inspect the content&rdquo;"],
-      ["WAF","Inline, layer 7 only","<em>HTTP exploits in front of ALB / CloudFront / API Gateway</em> &mdash; blind to non-HTTP traffic"]
-    ]
-  },
-  {
-    title:"DR strategy by RTO / RPO",
-    key:"dr",
-    dom:"Continuous improvement",
-    axis:"What is already running in the second region before disaster strikes? &mdash; that alone sets both cost and RTO",
-    col:"Running beforehand",
-    rows:[
-      ["Backup &amp; restore","Nothing &mdash; data only","<em>RTO and RPO in hours; cheapest</em> &mdash; the answer only when the scenario tolerates hours"],
-      ["Pilot light","Core data replicating, compute <em>off</em>","<em>RTO in tens of minutes</em> &mdash; database is live and syncing, servers exist but are stopped/minimal"],
-      ["Warm standby","A <b>scaled-down but running</b> copy","<em>RTO in minutes, and it can absorb traffic immediately while it scales</em> &mdash; the difference from pilot light is that it is already serving"],
-      ["Multi-site active/active","Full capacity, taking live traffic","<em>Near-zero RTO/RPO, highest cost and hardest data model</em> &mdash; requires an answer for write conflicts"],
-      ["AWS Elastic Disaster Recovery (DRS)","Continuous block replication, minimal compute","<em>&ldquo;Pilot light for existing servers, on-prem or EC2, without rewriting anything&rdquo;</em> &mdash; the lift-and-shift DR tool; don't confuse with MGN, which is for migrating"],
-      ["Static stability","Capacity pre-provisioned, no scaling needed to recover","<em>&ldquo;Recovery must not depend on a control-plane call or a scaling event during the incident&rdquo;</em> &mdash; the pro-level reason warm standby beats pilot light"]
-    ]
-  },
-  {
-    title:"Multi-region data replication",
-    key:"data",
-    dom:"New solutions",
-    axis:"How many regions can accept writes &mdash; and what happens when two of them write the same row?",
-    col:"Write topology / RPO",
-    rows:[
-      ["Aurora Global Database","<b>One</b> writer region, read-only secondaries","<em>Typical RPO ~1 second, fast managed failover/switchover</em> &mdash; the relational multi-region answer; write forwarding lets secondaries accept writes by shipping them to the primary"],
-      ["DynamoDB Global Tables","<b>Multi-active</b> &mdash; every region writes","<em>Last-writer-wins conflict resolution, eventual convergence</em> &mdash; the only easy active/active data answer; wrong if the app needs strong cross-region consistency"],
-      ["RDS cross-region read replica","One writer, manual promotion","<em>Higher RPO, promotion is a decision you make</em> &mdash; loses to Aurora Global DB on RTO"],
-      ["S3 CRR (+ RTC)","Async object copy","<em>Replication Time Control gives a 15-minute SLA</em> &mdash; use RTC when the question puts a number on replication lag; needs versioning both ends"],
-      ["S3 Multi-Region Access Point","One endpoint, routes and fails over","<em>&ldquo;Clients shouldn't know which bucket/region they're hitting&rdquo;</em> &mdash; routing layer on top of CRR, not a replication method"],
-      ["ElastiCache Global Datastore","One primary region, read-only replicas","<em>Cross-region cache reads and DR for Redis</em>"],
-      ["KMS multi-region keys","Neither &mdash; makes ciphertext portable","<em>&ldquo;Encrypted snapshot/object must be usable in the DR region&rdquo;</em> &mdash; without it, re-encryption is the blocker nobody plans for"]
-    ]
-  },
-  {
-    title:"Who decides to fail over",
-    key:"dr",
-    dom:"Continuous improvement",
-    axis:"Does the failover mechanism itself depend on the thing that is failing?",
-    col:"Control plane",
-    rows:[
-      ["ARC routing controls","Manual on/off switches on a <b>highly available data plane</b>","<em>&ldquo;Failover must work even if the region is impaired and consoles are unavailable&rdquo;</em> &mdash; the point is independence from the failing region; safety rules stop you turning everything off at once"],
-      ["ARC readiness checks","Continuous &ldquo;is the standby actually able to take over&rdquo;","<em>Catches quota, capacity and config drift in the standby</em> &mdash; the answer to &ldquo;we failed over and it didn't have room&rdquo;"],
-      ["Route 53 health checks + failover records","Automatic, DNS-driven","<em>Simple and effective, but subject to TTL and resolver caching</em> &mdash; cite caching when the question complains about slow failover"],
-      ["Zonal shift / autoshift","Pulls one AZ out of rotation","<em>&ldquo;A single AZ is grey-failing&rdquo;</em> &mdash; AZ-level, not region-level; autoshift lets AWS act for you"],
-      ["Global Accelerator","Anycast IPs, health-based regional steering","<em>Failover without DNS caching in the path, non-HTTP traffic, static IPs</em>"],
-      ["Auto Scaling / self-healing","Recovers instances, not regions","<em>A distractor on any regional-DR question</em>"]
-    ]
-  },
-  {
-    title:"Aurora &amp; RDS scaling topologies",
-    key:"data",
-    dom:"New solutions",
-    axis:"Are you scaling reads, scaling writes, or cutting failover time? &mdash; three different problems people give the same answer to",
-    col:"What it actually solves",
-    rows:[
-      ["Aurora read replicas + Auto Scaling","<b>Reads</b>","<em>Read-heavy traffic; reader endpoint spreads connections</em> &mdash; does nothing for write throughput"],
-      ["Aurora Serverless v2","<b>Vertical</b> capacity, automatically","<em>Spiky or unpredictable load, dev/test idling</em> &mdash; scales the instance, not the number of writers"],
-      ["Aurora Multi-AZ DB cluster (RDS)","<b>Failover time</b>, plus readable standbys","<em>Two readable standbys and faster failover than classic Multi-AZ</em> &mdash; the &ldquo;standby is idle and wasted&rdquo; complaint"],
-      ["Sharding / Aurora Limitless-style partitioning","<b>Writes</b>","<em>The only real answer when one writer is the ceiling</em> &mdash; if every option scales reads, re-read the question"],
-      ["RDS Proxy","<b>Connection</b> pressure","<em>Lambda or thousands of clients exhausting connections; also shortens failover for the app</em> &mdash; not a throughput fix"],
-      ["Aurora Blue/Green deployments","<b>Change risk</b>","<em>Major-version upgrades and schema changes with a fast, low-risk switchover</em>"],
-      ["Babelfish","<b>Migration effort</b>","<em>Run SQL Server T-SQL against Aurora PostgreSQL without rewriting the app</em> &mdash; a repatriation-of-license answer, not a scaling one"]
-    ]
-  },
-  {
-    title:"DynamoDB design at scale",
-    key:"data",
-    dom:"Continuous improvement",
-    axis:"What is the access pattern forcing on you &mdash; key design, an index, or a capacity mode?",
-    col:"Lever",
-    rows:[
-      ["Partition key design","The only real fix for a hot partition","<em>&ldquo;Throttling on a small number of keys&rdquo;</em> &mdash; high-cardinality keys or write sharding; adding capacity is the wrong answer"],
-      ["GSI","A different partition key, eventually consistent","<em>&ldquo;Query by an attribute that isn't the key&rdquo;</em> &mdash; own capacity; a throttled GSI can throttle the base table's writes"],
-      ["LSI","Same partition key, different sort key, strongly consistent option","<em>Must be created with the table and shares the 10 GB item-collection limit</em> &mdash; the constraint that usually rules it out"],
-      ["On-demand vs provisioned + auto scaling","Cost shape","<em>Unpredictable or brand-new workload &rarr; on-demand; steady and forecastable &rarr; provisioned, cheaper</em>"],
-      ["DynamoDB Streams","Change propagation","<em>Fan out to Lambda, cross-service sync, event sourcing</em> &mdash; the hook for &ldquo;react to every write&rdquo;"],
-      ["TTL","Free expiry","<em>&ldquo;Old items must age out without costing write capacity&rdquo;</em>"],
-      ["Transactions","All-or-nothing across items","<em>Consumes roughly double the capacity</em> &mdash; the cost the question wants you to notice"]
-    ]
-  },
-  {
-    title:"Event orchestration",
-    key:"ops",
-    dom:"New solutions",
-    axis:"Does it hold state, guarantee order, and how long may it run?",
-    col:"State / ordering / duration",
-    rows:[
-      ["Step Functions <b>Standard</b>","Stateful, exactly-once, up to a year","<em>Long-running business workflows, human approval, full audit history</em> &mdash; the durable-orchestration answer"],
-      ["Step Functions <b>Express</b>","Stateful, at-least-once, minutes","<em>Very high-volume short workflows, cheaper</em> &mdash; at-least-once means your steps must be idempotent"],
-      ["EventBridge bus + rules","Stateless, no ordering","<em>Content-based routing to many targets, cross-account buses, archive and replay</em> &mdash; replay is the tell for &ldquo;reprocess past events&rdquo;"],
-      ["EventBridge Pipes","Stateless point-to-point with filter/enrich","<em>&ldquo;Connect a stream or queue to a target without writing glue code&rdquo;</em>"],
-      ["EventBridge Scheduler","Time-based, at scale","<em>Millions of one-off or cron schedules</em> &mdash; beyond what a single cron rule handles"],
-      ["SQS FIFO","Ordered <em>per message group</em>, exactly-once processing","<em>&ldquo;Per-customer ordering&rdquo;</em> &mdash; the group ID is what preserves parallelism"],
-      ["Kinesis Data Streams","Ordered per shard, replayable, many consumers","<em>Multiple independent readers over the same ordered data</em> &mdash; enhanced fan-out when consumers contend for throughput"],
-      ["DLQ + idempotency keys","Neither &mdash; the correctness layer","<em>&ldquo;Duplicate side effects&rdquo; / &ldquo;messages vanish on repeated failure&rdquo;</em> &mdash; frequently the missing piece rather than a different service"]
-    ]
-  },
-  {
-    title:"Lambda concurrency &amp; cold starts",
-    key:"ops",
-    dom:"Continuous improvement",
-    axis:"Are you capping throughput, removing initialization latency, or moving the code closer to the user?",
-    col:"What it changes",
-    rows:[
-      ["Reserved concurrency","A <b>cap</b> &mdash; and a guarantee","<em>&ldquo;Stop this function starving the others / overwhelming a database&rdquo;</em> &mdash; sets a ceiling and carves out that share; does nothing for cold starts"],
-      ["Provisioned concurrency","Pre-initialized environments","<em>&ldquo;Latency-sensitive, p99 matters, predictable traffic&rdquo;</em> &mdash; the actual cold-start fix; costs money while idle"],
-      ["SnapStart","Cached initialization snapshot","<em>Cold-start relief without paying for always-warm capacity</em> &mdash; runtime-dependent; watch for uniqueness bugs in restored state"],
-      ["Account concurrency quota","The regional ceiling","<em>&ldquo;Throttled at a round number across all functions&rdquo;</em> &mdash; the answer is a quota increase, not a code change"],
-      ["Lambda@Edge","Full-featured code at regional edges","<em>Modify requests/responses, needs longer execution or network calls</em>"],
-      ["CloudFront Functions","Ultra-light, sub-millisecond, viewer-only","<em>Header rewrites, URL normalization, simple redirects at massive scale</em> &mdash; no network access; the cheaper of the two"],
-      ["Fargate / ECS","Not Lambda at all","<em>Long-running, &gt;15-minute, or heavy-dependency workloads</em> &mdash; the right answer when the question quietly breaks a Lambda limit"]
-    ]
-  },
-  {
-    title:"EC2 placement, tenancy &amp; licensing",
-    key:"ops",
-    dom:"New solutions",
-    axis:"Do you need instances close together, far apart, or on hardware you can account for?",
-    col:"Physical arrangement",
-    rows:[
-      ["Cluster placement group","<b>Packed together</b>, one AZ","<em>Lowest network latency, HPC, tightly-coupled nodes</em> &mdash; concentrates risk in one AZ by design"],
-      ["Spread placement group","<b>Distinct hardware</b>","<em>&ldquo;These few critical instances must not share a host&rdquo;</em> &mdash; small per-AZ limit, so wrong for large fleets"],
-      ["Partition placement group","Grouped into isolated racks","<em>HDFS, Cassandra, Kafka &mdash; replica-aware topology</em> &mdash; the large-distributed-system answer between the other two"],
-      ["Dedicated Instances","Isolated hardware, no host visibility","<em>Isolation requirement only</em>"],
-      ["Dedicated Hosts","A whole physical server you control","<em>BYOL licensed per socket/core, host affinity, compliance needing hardware visibility</em> &mdash; the licensing answer"],
-      ["License Manager","Tracks and enforces entitlements","<em>&ldquo;Prove we stayed within our license count&rdquo;</em> &mdash; can block launches that would breach it"],
-      ["Capacity Reservations / Capacity Blocks","Guaranteed capacity in an AZ","<em>&ldquo;The instances must be available at that time&rdquo;</em> &mdash; separate from any discount; pair with a Savings Plan"]
-    ]
-  },
-  {
-    title:"Deployment &amp; release strategies",
-    key:"ops",
-    dom:"Continuous improvement",
-    axis:"Where does the traffic split happen, and how fast can you undo it?",
-    col:"Split point / rollback",
-    rows:[
-      ["In-place rolling","No split &mdash; instances replaced in batches","<em>Cheapest, but rollback means another deploy</em> &mdash; wrong when &ldquo;instant rollback&rdquo; appears"],
-      ["Blue/green with two target groups","At the <b>load balancer</b>","<em>Instant rollback by pointing back; full second environment</em> &mdash; ALB weighted target groups give fine-grained shifting"],
-      ["Blue/green via Route 53 weights","At <b>DNS</b>","<em>Whole-stack or cross-region cutover</em> &mdash; rollback is gated by TTL and client caching, which is the drawback to name"],
-      ["Lambda alias traffic shifting","At the <b>function alias</b>","<em>Canary/linear percentages with CloudWatch alarm auto-rollback via CodeDeploy</em>"],
-      ["ECS blue/green (CodeDeploy)","At the ALB, per task set","<em>Container cutover with test listener and automatic rollback</em>"],
-      ["AppConfig feature flags","<b>Inside the app</b>, no deploy","<em>&ldquo;Turn the feature off without shipping code&rdquo;</em> &mdash; separates release from deploy; has validators and automatic rollback on alarm"],
-      ["Canary + synthetic monitoring","The decision input, not the mechanism","<em>CloudWatch Synthetics catches breakage before real users do</em>"]
-    ]
-  },
-  {
-    title:"Infrastructure as code at scale",
-    key:"ops",
-    dom:"Organizational complexity",
-    axis:"What is the reuse boundary, and what is the blast radius of one bad change?",
-    col:"Unit of reuse",
-    rows:[
-      ["Nested stacks","A stack inside a stack","<em>Share a component within one deployment</em> &mdash; parent stack is a single blast radius"],
-      ["StackSets","One template, many accounts and regions","<em>Org-wide baselines; auto-deploy on account creation</em>"],
-      ["Modules / CDK constructs","A typed, versioned building block","<em>&ldquo;Every team must use the compliant VPC pattern&rdquo;</em> &mdash; reuse with encapsulation"],
-      ["Change sets + drift detection","Review and reconcile","<em>&ldquo;What exactly will this update do / who changed it by hand?&rdquo;</em> &mdash; the safe-change answer"],
-      ["DeletionPolicy / UpdateReplacePolicy","Data survival","<em>&ldquo;A stack update replaced the database and we lost data&rdquo;</em> &mdash; Retain/Snapshot; the highest-consequence, most-forgotten setting"],
-      ["Custom resources / Lambda-backed","Escape hatch","<em>Something CloudFormation can't model natively</em>"],
-      ["CloudFormation Hooks","Proactive enforcement","<em>Block non-compliant resources <em>before</em> they're created</em> &mdash; the proactive control in Control Tower terms; Config would only detect it afterward"]
-    ]
-  },
-  {
-    title:"Commitment discounts &mdash; what each actually covers",
-    key:"cost",
-    dom:"Continuous improvement",
-    axis:"How much flexibility are you giving up, and what services does the commitment even apply to?",
-    col:"Covers / flexibility",
-    rows:[
-      ["Compute Savings Plan","EC2 + <b>Fargate + Lambda</b>, any region, family, OS, tenancy","<em>&ldquo;Maximum flexibility, we're still changing architecture&rdquo;</em> &mdash; the only commitment that spans serverless and containers"],
-      ["EC2 Instance Savings Plan","One instance family in one region","<em>Deepest discount, but you're locked to the family</em>"],
-      ["Standard RI","Fixed family/size/region for 1 or 3 years","<em>Can be sold on the Marketplace; largest RI discount</em>"],
-      ["Convertible RI","Exchangeable for different attributes","<em>&ldquo;Need a discount but the instance type may change&rdquo;</em> &mdash; less discount than Standard"],
-      ["Zonal RI","Also <b>reserves capacity</b> in one AZ","<em>Regional RIs do NOT reserve capacity</em> &mdash; the distinction that decides &ldquo;guarantee capacity in a specific AZ&rdquo;"],
-      ["Spot + capacity rebalancing","No commitment, interruptible","<em>Diversify across instance types and use rebalance signals</em> &mdash; the fault-tolerant, cheapest option"],
-      ["Organization-wide sharing","Discounts pool across accounts by default","<em>&ldquo;One account bought the RI, another should benefit&rdquo;</em> &mdash; sharing is on unless you turn it off per account"]
-    ]
-  },
-  {
-    title:"Cost visibility, allocation &amp; action",
-    key:"cost",
-    dom:"Continuous improvement",
-    axis:"Does it show you the spend, attribute it to someone, or actually change it?",
-    col:"Report / allocate / act",
-    rows:[
-      ["Cost Explorer","<b>Shows</b>, with forecasting","<em>Trends, rightsizing hints, RI/SP coverage and utilization reports</em> &mdash; the &ldquo;why did the bill jump&rdquo; starting point"],
-      ["Cost and Usage Report (CUR)","<b>Shows</b> &mdash; line-item raw data","<em>&ldquo;We need our own analysis / Athena queries / chargeback engine&rdquo;</em> &mdash; the answer whenever Cost Explorer's granularity is called insufficient"],
-      ["Cost allocation tags","<b>Allocates</b>","<em>Must be activated to appear in billing, and are not retroactive</em> &mdash; that gap is the tested part"],
-      ["Cost Categories","<b>Allocates</b> with rules","<em>Group accounts/services into business dimensions without re-tagging everything</em>"],
-      ["Billing Conductor","<b>Allocates</b> with custom rates","<em>Showback/chargeback to tenants at prices you define</em>"],
-      ["Budgets + budget actions","<b>Acts</b>","<em>&ldquo;Stop it automatically when we exceed the threshold&rdquo;</em> &mdash; can apply an SCP/IAM policy or stop instances; alerting alone is the weaker option"],
-      ["Compute Optimizer","<b>Acts</b> on sizing, with evidence","<em>Rightsizing recommendations from real utilization across EC2/EBS/Lambda/ECS</em> &mdash; beats Trusted Advisor's coarser checks"]
-    ]
-  },
-  {
-    title:"Data transfer cost &mdash; where the meter runs",
-    key:"cost",
-    dom:"Continuous improvement",
-    axis:"Which boundary is the traffic crossing? &mdash; almost every surprise bill is an architecture diagram problem",
-    col:"What you're charged for",
-    rows:[
-      ["NAT Gateway","Hourly <b>plus per-GB data processing</b>","<em>&ldquo;Huge NAT bill from instances pulling from S3&rdquo;</em> &mdash; a gateway endpoint removes it entirely and is free"],
-      ["Gateway endpoint (S3 / DynamoDB)","Free","<em>The fix for the row above</em> &mdash; route-table based, no per-GB charge"],
-      ["Interface endpoint / PrivateLink","Hourly per ENI + per GB","<em>Cheaper than NAT for AWS APIs, but not free</em> &mdash; don't claim it's free on an exam question"],
-      ["Cross-AZ traffic","Charged, and in <b>both</b> directions","<em>Chatty replicas or microservices spread across AZs</em> &mdash; balanced against the resilience you're buying"],
-      ["Cross-region","Charged, higher","<em>Replication and global tables have an ongoing transfer cost</em>"],
-      ["Internet egress","Charged per GB out","<em>The default assumption</em>"],
-      ["CloudFront","Origin fetches are free from AWS origins; egress at CDN rates","<em>&ldquo;Reduce data transfer cost for a high-traffic site&rdquo;</em> &mdash; put the CDN in front; caching cuts the origin traffic too"],
-      ["Direct Connect","Lower per-GB than internet egress","<em>Sustained large volumes on-prem</em> &mdash; the cost argument for DX, separate from the latency one"]
-    ]
-  },
-  {
-    title:"The 7 Rs",
-    key:"migrate",
-    dom:"Migration &amp; modernization",
-    axis:"How much of the application actually changes?",
-    col:"What changes",
-    rows:[
-      ["Retire","It goes away","<em>Discovery found nobody uses it</em> &mdash; the cheapest &ldquo;migration&rdquo; and an easy one to forget exists"],
-      ["Retain","Nothing &mdash; it stays put","<em>Regulatory, or a dependency that isn't ready</em> &mdash; a legitimate answer, not a cop-out"],
-      ["Relocate","Hypervisor moves, OS and app untouched","<em>VMware Cloud on AWS</em> &mdash; whole-estate moves with no conversion"],
-      ["Rehost","Infrastructure only &mdash; lift and shift","<em>&ldquo;Fastest, minimal change, tight deadline&rdquo;</em> &mdash; MGN; optimize later"],
-      ["Replatform","Managed service underneath, app mostly intact","<em>EC2 MySQL &rarr; RDS, self-managed Kafka &rarr; MSK</em> &mdash; the &ldquo;reduce operational overhead without a rewrite&rdquo; middle ground"],
-      ["Repurchase","Swap for a different product","<em>Move to SaaS</em>"],
-      ["Refactor","The application is rewritten","<em>Highest cost and risk; justified by scale, agility or per-unit economics</em> &mdash; wrong whenever the scenario stresses speed or low risk"]
-    ]
-  },
-  {
-    title:"Migration tooling by source",
-    key:"migrate",
-    dom:"Migration &amp; modernization",
-    axis:"What are you moving, and must the source keep serving while you move it?",
-    col:"Source &rarr; target",
-    rows:[
-      ["Application Discovery Service","Nothing &mdash; it inventories","<em>&ldquo;We don't know what we have or how it's connected&rdquo;</em> &mdash; agentless for VMware, agent-based for deeper data; feeds Migration Hub"],
-      ["Migration Evaluator","Nothing &mdash; it builds the business case","<em>&ldquo;Justify the migration / estimate run-rate&rdquo;</em>"],
-      ["Application Migration Service (MGN)","<b>Servers</b>, continuous block replication","<em>Rehost with minimal downtime and a short cutover</em> &mdash; the default lift-and-shift tool"],
-      ["Elastic Disaster Recovery (DRS)","Servers &mdash; same engine, <b>DR</b> not migration","<em>Ongoing recovery posture rather than a one-way cutover</em> &mdash; the pair you must not mix up"],
-      ["DMS (+ SCT)","<b>Databases</b>, full load then CDC","<em>Source stays live; SCT converts schema when engines differ</em>"],
-      ["DataSync","<b>Files</b>, online, repeatable","<em>NFS/SMB/HDFS/object over the network, with verification and scheduling</em>"],
-      ["Snow Family","Files, <b>offline</b>","<em>&ldquo;Bandwidth would take months&rdquo;</em> &mdash; do the arithmetic; if the transfer beats the shipping round-trip, Snow is the distractor"],
-      ["App2Container / Mainframe Modernization","<b>Application form factor</b>","<em>Containerize existing apps, or refactor/replatform mainframe workloads</em> &mdash; modernization, not movement"]
-    ]
-  },
-  {
-    title:"Database cutover with minimal downtime",
-    key:"migrate",
-    dom:"Migration &amp; modernization",
-    axis:"Is the engine changing, and how much downtime does the cutover get?",
-    col:"Mechanism",
-    rows:[
-      ["DMS full load + <b>CDC</b>","Bulk copy, then stream ongoing changes","<em>&ldquo;Near-zero downtime&rdquo;</em> &mdash; CDC is the phrase that earns the answer; cut over when replication lag reaches zero"],
-      ["SCT","Converts schema and code objects","<em>Only for <b>heterogeneous</b> moves (Oracle &rarr; PostgreSQL)</em> &mdash; unnecessary same-engine, so its presence signals an engine change"],
-      ["Babelfish","Keeps the client protocol, changes the engine","<em>T-SQL apps onto Aurora PostgreSQL with few app changes</em>"],
-      ["Aurora Blue/Green deployments","Shadow copy kept in sync, fast switchover","<em>Upgrades and schema changes on an existing Aurora/RDS cluster</em> &mdash; not a cross-engine tool"],
-      ["Read replica promotion","Replicate, then promote","<em>Same-engine moves and region changes</em> &mdash; simple, but downtime equals the promotion window"],
-      ["Snapshot restore","Copy at a point in time","<em>Downtime equals the restore</em> &mdash; only when the window is generous"],
-      ["Replication instance sizing / multi-AZ DMS","The thing that breaks quietly","<em>&ldquo;Migration is too slow / CDC can't keep up&rdquo;</em> &mdash; size the replication instance, or split tasks across several"]
-    ]
-  },
-  {
-    title:"Decomposing a monolith",
-    key:"migrate",
-    dom:"Migration &amp; modernization",
-    axis:"What do you extract first, and what shields the parts you haven't touched yet?",
-    col:"Pattern",
-    rows:[
-      ["Strangler fig","Route slices of traffic to new services incrementally","<em>&ldquo;Modernize without a big-bang rewrite&rdquo;</em> &mdash; an ALB or API Gateway routes by path while the monolith shrinks; the default answer"],
-      ["Anti-corruption layer","A translation shim at the boundary","<em>Stops the legacy data model leaking into new services</em>"],
-      ["Queue-based load leveling","Insert a queue between tiers","<em>&ldquo;Spikes overwhelm the legacy backend&rdquo;</em> &mdash; decouple first; often the cheapest useful step"],
-      ["CQRS / event sourcing","Split reads from writes, keep the event log","<em>Read and write loads scale very differently, or an audit trail is required</em>"],
-      ["Sidecar / service mesh","Move cross-cutting concerns out of the app","<em>mTLS, retries, observability without touching business code</em>"],
-      ["Database decomposition last","Keep the shared database until services are stable","<em>The data layer is the hardest and riskiest cut</em> &mdash; an option that splits the database first is usually the trap"],
-      ["Big-bang rewrite","Everything at once","<em>Almost always the wrong answer</em> &mdash; it only wins when the scenario explicitly rules out running both systems"]
+      ["IAM Access Analyzer","Analyzes resource policies by automated reasoning to find resources reachable from outside your zone of trust","<em>Reasons from the policy itself, not from logs</em> &mdash; so it surfaces exposure nobody has used yet"],
+      ["Assuming a role vs. a resource-based policy","Assume a role and its permissions <b>replace</b> yours; a resource-based policy grants access while you <b>keep</b> your own","<em>&ldquo;Must still reach resources in the original account&rdquo;</em> &mdash; role assumption trades your own permissions away for the session, so work that needs both sides at once wants a resource-based policy"],
+      ["Zone of trust","The boundary you choose when creating the analyzer &mdash; <b>account</b> or <b>organization</b>","<em>Decides what counts as external</em> &mdash; at organization scope, sharing between accounts inside the org is not a finding; at account scope the same sharing is"],
+      ["Policy validation","Checks a policy you wrote against IAM grammar and best practice","<em>Errors, security warnings and suggestions before the policy ships</em> &mdash; catches over-broad wildcards and missing conditions"],
+      ["Policy generation","Builds a policy from <b>CloudTrail</b> activity, up to <b>90 days</b> back","<em>&ldquo;We don't know what permissions this role actually needs&rdquo;</em> &mdash; least privilege derived from what the principal really did; nothing to generate if it has no history"]
     ]
   }
 ];
@@ -706,14 +251,15 @@ CLUSTERS.forEach((c, i) => {
 
   const head = document.createElement('div');
   head.className = 'cl-head';
-  head.innerHTML = `<span class="num">${String(i+1).padStart(2,'0')}</span><h2>${c.title}</h2>`
-    + `<span class="dom">${c.dom}</span>`;
+  head.innerHTML = `<span class="num">${String(i+1).padStart(2,'0')}</span><h2>${c.title}</h2>`;
   sec.append(head);
 
-  const axis = document.createElement('p');
-  axis.className = 'axis';
-  axis.innerHTML = `Deciding axis: <b>${c.axis}</b>`;
-  sec.append(axis);
+  if (c.axis) {
+    const axis = document.createElement('p');
+    axis.className = 'axis';
+    axis.innerHTML = `Deciding axis: <b>${c.axis}</b>`;
+    sec.append(axis);
+  }
 
   const tw = document.createElement('div');
   tw.className = 'tw';
@@ -772,7 +318,7 @@ btn.addEventListener('click', () => {
   if (!on) document.querySelectorAll('td.svc b.on').forEach(b => b.classList.remove('on'));
   hint.innerHTML = on
     ? 'Names hidden. Read across the row and name it before you click &mdash; at professional level the row you can describe but not name is the one that will cost you.'
-    : 'Professional-level discrimination only &mdash; the associate service catalog and its contrast sets live in the other two decks, and nothing is repeated here. Turn on <b>Blank mode</b> to hide the names and work backward from the behavior.';
+    : 'Built up section by section while studying &mdash; only what has actually been covered. Turn on <b>Blank mode</b> to hide the names and work backward from the behavior.';
 });
 </script>
 </body>
