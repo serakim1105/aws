@@ -9,8 +9,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+Condensed:wght@700&family=IBM+Plex+Sans:wght@400;500&display=swap">
 <style>
-  :root{--ground:#F4F6F9;--surface:#FFFFFF;--ink:#0F141B;--muted:#59647A;--faint:#8A94A6;--line:#DDE3EC;--accent:#B4560A;--focus:#2E73B8;--quick:#20629F;--concept:#C01E36;}
-  @media (prefers-color-scheme: dark){:root{--ground:#0D1117;--surface:#151B24;--ink:#E4E9F1;--muted:#96A1B4;--faint:#6C7789;--line:#242C38;--accent:#F0912F;--focus:#6BA6E8;--quick:#5BA3E8;--concept:#F2647A;}}
+  :root{--ground:#F4F6F9;--surface:#FFFFFF;--ink:#0F141B;--muted:#59647A;--faint:#8A94A6;--line:#DDE3EC;--accent:#B4560A;--focus:#2E73B8;--quick:#20629F;--concept:#C01E36;--pro:#6B36D6;}
+  @media (prefers-color-scheme: dark){:root{--ground:#0D1117;--surface:#151B24;--ink:#E4E9F1;--muted:#96A1B4;--faint:#6C7789;--line:#242C38;--accent:#F0912F;--focus:#6BA6E8;--quick:#5BA3E8;--concept:#F2647A;--pro:#A98BFF;}}
   *{box-sizing:border-box}
   body{margin:0;background:var(--ground);color:var(--ink);font-family:'IBM Plex Sans',-apple-system,'Segoe UI',Roboto,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
   .wrap{max-width:760px;margin:0 auto;padding:3rem 1.5rem 4rem}
@@ -31,8 +31,8 @@
 <body>
 <div class="wrap">
   <header>
-    <h1>AWS SAA Study Decks</h1>
-    <p>Solutions Architect &mdash; Associate &middot; two passes</p>
+    <h1>AWS Study Decks</h1>
+    <p>Solutions Architect &middot; Associate &rarr; Professional</p>
   </header>
   <div class="decks">
     <a class="deck" href="aws-quick-cards.html" style="--hue:var(--quick)">
@@ -43,10 +43,15 @@
     <a class="deck" href="aws-concept-cards.html" style="--hue:var(--concept)">
       <div class="pass">Pass 2 &middot; discrimination</div>
       <h2>Concept Cards</h2>
-      <p>Eighteen contrast sets the exam actually tests &mdash; each organised by its one deciding axis, with the exam phrasing that triggers it. Blank mode and shuffle.</p>
+      <p>Twenty-five contrast sets the exam actually tests &mdash; each organised by its one deciding axis, with the exam phrasing that triggers it. Blank mode and shuffle.</p>
+    </a>
+    <a class="deck" href="aws-professional-cards.html" style="--hue:var(--pro)">
+      <div class="pass">SAP-C02 &middot; professional</div>
+      <h2>Professional Cards</h2>
+      <p>Twenty-eight contrast sets at professional depth &mdash; policy evaluation order, multi-region data, failover control planes, cost allocation, the 7 Rs. Assumes the associate decks; repeats none of them.</p>
     </a>
   </div>
-  <p class="how"><b>How to use them:</b> run Quick Cards once to find the names you can't recall. Then spend your time in Concept Cards &mdash; reproduce a table from blank, check, repeat. Definitions are the cheap part; telling neighbours apart is what the exam grades.</p>
+  <p class="how"><b>How to use them:</b> run Quick Cards once to find the names you can't recall. Then spend your time in Concept Cards &mdash; reproduce a table from blank, check, repeat. Definitions are the cheap part; telling neighbours apart is what the exam grades. Professional Cards picks up where those leave off: same method, but the axes are architectural trade-offs rather than service identity.</p>
 </div>
 </body>
 </html>
