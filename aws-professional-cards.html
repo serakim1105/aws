@@ -282,7 +282,10 @@ const CLUSTERS = [
       ["S3 Bucket Policies","<b>Resource based</b> &mdash; public access, force objects to be encrypted at upload, grant access to cross account."],
       ["S3 presigned URL","An S3 link signed with your IAM credentials that carries <b>your permissions</b> for a set time, and can authorize an <b>upload</b> as well as a download. Valid for default <b>3600 sec (1hr)</b> or <b>--expires-in</b>."],
       ["CloudFront signed URL","Grants <b>one file</b> through the CDN, signed with a <b>CloudFront key group</b>, with optional <b>IP restriction</b>."],
-      ["CloudFront signed cookie","Grants a <b>whole path</b> through the CDN with one cookie and <b>no URL changes</b>, but the client must support cookies."]
+      ["CloudFront signed cookie","Grants a <b>whole path</b> through the CDN with one cookie and <b>no URL changes</b>, but the client must support cookies."],
+      ["S3 Object Lock","Per-object-version <b>WORM</b> on S3, in <b>Governance</b> mode (overridable with the bypass permission) or <b>Compliance</b> mode (nobody, including root), plus an open-ended <b>Legal Hold</b>."],
+      ["Glacier Vault Lock","Whole-vault <b>WORM</b> enforced by a policy you lock permanently, with a <b>24-hour validation window</b> before it becomes irreversible."],
+      ["S3 Access Point","Manage S3 policy <b>at scale</b> &mdash; instead of one bucket policy per bucket, assign more <b>granular, specific access</b> to each access point, each with its own policy."]
     ]
   }
 ];
