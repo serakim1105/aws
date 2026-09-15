@@ -132,6 +132,10 @@
   td.svc b{
     font-family:var(--fs-mono);font-size:.79rem;font-weight:600;color:var(--hue);
   }
+
+  /* sub-rows: indented children of the row above */
+  tr.sub td.svc{padding-left:1.4rem;}
+  tr.sub td.svc b{font-weight:500;font-size:.76rem;}
   body.blank td.svc b{
     color:transparent;background:var(--line);border-radius:2px;
     cursor:pointer;display:inline-block;min-width:7rem;
@@ -191,6 +195,8 @@
     td.svc{width:auto;white-space:normal;margin-bottom:.15rem;}
     td.svc b{font-size:.86rem;}
     body.blank td.svc b{min-width:8rem;}
+    tr.sub{padding-left:1rem;border-left:2px solid var(--line);}
+    tr.sub td.svc{padding-left:0;}
   }
 
   @media (max-width:400px){
@@ -236,7 +242,13 @@ const CLUSTERS = [
       ["Policy generation","Builds a policy from <b>CloudTrail</b> activity, up to <b>90 days</b> back."],
       ["Access Analyzer &mdash; detect vs. prescribe","The two <b>policy</b> features prescribe: validation suggests changes, generation drafts the policy for you."],
       ["Assuming a role vs. a resource-based policy","Assume a role and its permissions <b>replace</b> yours; a resource-based policy grants access while you <b>keep</b> your own, so work that needs both sides at once wants a resource-based policy."],
-      ["Third-party access &mdash; <b>sts:AssumeRole</b> + external ID","The vendor's AWS account is the principal in your role's trust policy, and that policy requires an <b>ExternalId</b> you issue them; they pass it on the AssumeRole call. Prevents the confused deputy problem."]
+      ["Third-party access &mdash; <b>sts:AssumeRole</b> + external ID","The vendor's AWS account is the principal in your role's trust policy, and that policy requires an <b>ExternalId</b> you issue them; they pass it on the AssumeRole call. Prevents the confused deputy problem."],
+      ["STS APIs","Five ways to get temporary credentials. The three <b>AssumeRole*</b> calls return credentials for a <b>role</b>; the two <b>Get*</b> calls do not involve a role at all."],
+      ["AssumeRole","Caller already holds AWS credentials. Cross-account access and role switching inside AWS &mdash; the call you pair with an external ID for third-party vendors.","sub"],
+      ["AssumeRoleWithSAML","Caller presents a <b>SAML 2.0</b> assertion instead of AWS credentials. Workforce federation from an enterprise IdP such as AD FS or Okta.","sub"],
+      ["AssumeRoleWithWebIdentity","Caller presents an <b>OIDC / web identity</b> token instead of AWS credentials. App end users via Cognito, Google or Facebook; also how EKS service accounts get credentials.","sub"],
+      ["GetSessionToken","Returns credentials for an <b>existing IAM user</b>, carrying that user's own permissions &mdash; no role involved. Mainly used to satisfy an <b>MFA</b> requirement on later calls.","sub"],
+      ["GetFederationToken","Returns credentials for a <b>federated user</b> through a custom identity broker &mdash; no role involved. Permissions are the intersection of the calling user's policy and a policy passed on the call.","sub"]
     ]
   }
 ];
@@ -262,8 +274,8 @@ CLUSTERS.forEach((c, i) => {
 
   const tw = document.createElement('div');
   tw.className = 'tw';
-  const body = c.rows.map(([svc, what]) =>
-    `<tr><td class="svc" data-label="Service"><b tabindex="0" role="button">${svc}</b></td>`
+  const body = c.rows.map(([svc, what, mod]) =>
+    `<tr${mod ? ` class="${mod}"` : ''}><td class="svc" data-label="Service"><b tabindex="0" role="button">${svc}</b></td>`
     + `<td data-label="${c.col.replace(/<[^>]*>/g,'')}">${what}</td></tr>`
   ).join('');
   tw.innerHTML =
