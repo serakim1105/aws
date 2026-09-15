@@ -277,7 +277,9 @@ const CLUSTERS = [
       ["CloudHSM","<b>Single-tenant</b> dedicated hardware, where KMS is <b>multi-tenant</b>. AWS provisions the hardware (HSM = Hardware Security Module), but <b>you manage your own keys entirely</b>, not AWS. The device is tamper resistant and <b>FIPS 140-2 Level 3</b> compliant. Supports both <b>symmetric and asymmetric</b> encryption, including SSL/TLS keys. <b>No free tier.</b> You must use the <b>CloudHSM Client Software</b>. A cluster can span multiple AZs, so it is <b>highly available</b>. A natural fit for <b>SSE-C</b>, where you hold the key and supply it on every request and AWS never stores it."],
       ["SSE-S3 vs SSE-KMS","Choose KMS for <b>audit trail</b>, <b>additional security</b>, <b>key control</b> (customer managed key). If KMS request quota is throttled, fix it with <b>S3 bucket keys</b>, cutting down KMS calls."],
       ["S3 Access Logs","Access requests. <b>Hours</b> to deliver, best effort (incomplete)."],
-      ["S3 Event Notifications","Certain events (create, remove, restore, replicate). <b>Seconds/minutes</b> to deliver to SQS, SNS, Lambda."]
+      ["S3 Event Notifications","Certain events (create, remove, restore, replicate). <b>Seconds/minutes</b> to deliver to SQS, SNS, Lambda."],
+      ["S3 IAM policy","<b>User based</b> &mdash; attached to an IAM user, group or role."],
+      ["S3 Bucket Policies","<b>Resource based</b> &mdash; public access, force objects to be encrypted at upload, grant access to cross account."]
     ]
   }
 ];
