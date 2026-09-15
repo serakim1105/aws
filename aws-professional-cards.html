@@ -287,7 +287,8 @@ const CLUSTERS = [
       ["Glacier Vault Lock","Whole-vault <b>WORM</b> enforced by a policy you lock permanently, with a <b>24-hour validation window</b> before it becomes irreversible."],
       ["S3 Access Point","Manage S3 policy <b>at scale</b> &mdash; instead of one bucket policy per bucket, assign more <b>granular, specific access</b> to each access point, each with its own policy."],
       ["S3 Access Point &mdash; VPC Origin","An access point locked to <b>VPC-only</b> reachability, accessed through a <b>Gateway or Interface VPC endpoint</b> whose endpoint policy must allow <b>both</b> the access point and the underlying bucket."],
-      ["S3 Multi-Region Access Point","A single <b>global endpoint</b> spanning buckets in several Regions that routes each request to the <b>lowest-latency</b> bucket, kept in sync by <b>bi-directional replication</b>, with <b>failover controls</b> to shift traffic between Regions in minutes (active-active or active-passive)."]
+      ["S3 Multi-Region Access Point","A single <b>global endpoint</b> spanning buckets in several Regions that routes each request to the <b>lowest-latency</b> bucket, kept in sync by <b>bi-directional replication</b>, with <b>failover controls</b> to shift traffic between Regions in minutes (active-active or active-passive)."],
+      ["S3 Object Lambda","Runs a <b>Lambda function that transforms the object as it is retrieved</b>, so one bucket can serve different views of the same data through an <b>Object Lambda Access Point</b> layered over a standard access point &mdash; used for redacting PII, converting formats such as XML to JSON, and resizing or watermarking images per caller."]
     ]
   }
 ];
