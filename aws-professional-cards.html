@@ -264,8 +264,8 @@ const CLUSTERS = [
     axis:"",
     col:"What it is",
     rows:[
-      ["CloudTrail","Records API activity. <b>Management events</b> &mdash; control-plane calls such as RunInstances or AttachRolePolicy &mdash; are <b>logged by default</b>, and Event history holds the last 90 days with no trail to set up. <b>Data events</b> &mdash; S3 object-level, Lambda Invoke, DynamoDB item-level &mdash; are <b>not enabled by default</b>; you turn them on deliberately, and they cost real money because the volume is enormous. Create a trail to deliver to S3 or CloudWatch Logs for anything beyond 90 days; an organization trail covers every account."],
-      ["CloudTrail Insights","Detects <b>unusual API activity</b> against a learned baseline of your own normal patterns. Two types: API <b>call rate</b> and API <b>error rate</b>. Enabled explicitly on a trail, charged separately, and needs time to build the baseline before it reports anything. Deviation from your own history &mdash; not known-bad threat intelligence, which is GuardDuty."]
+      ["CloudTrail","Records API activity. <b>Management events</b> &mdash; RunInstances or AttachRolePolicy &mdash; are <b>logged by default</b>. <b>Data events</b> &mdash; S3 object-level, Lambda Invoke, DynamoDB item-level &mdash; are <b>not enabled by default</b>; you turn them on deliberately, and they cost real money because the volume is enormous. Create a trail to deliver to S3 or CloudWatch Logs for anything beyond 90 days; an organization trail covers every account."],
+      ["CloudTrail Insights","Detects <b>unusual API activity</b> against a learned baseline of management events. Two types: API <b>call rate</b> and API <b>error rate</b>. Enabled explicitly on a trail, charged separately, and needs time to build the baseline before it reports anything. Not known-bad threat intelligence, which is GuardDuty. Examples (inaccurate resource provisioning, bursts of IAM actions, hitting service limits, gaps in management activity)"]
     ]
   }
 ];
