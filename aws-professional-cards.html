@@ -295,7 +295,8 @@ const CLUSTERS = [
       ["Security groups &mdash; allow only","Security groups have <b>allow rules only</b>; there is no deny rule. Anything not matched by an allow is implicitly denied, and because they are <b>stateful</b>, return traffic is permitted automatically. To <b>explicitly block</b> an IP you need a <b>NACL</b>, which is stateless and does support deny."],
       ["Amazon Inspector","Only for <b>EC2, container images (ECR), and Lambda functions</b>. Scans for <b>CVEs</b> and <b>network reachability</b>. Runs when <b>inventory or CVE updates</b>. Reports in <b>AWS Security Hub</b> and sends findings to <b>EventBridge</b>."],
       ["AWS Config","Records your resource configurations and their <b>changes over time</b> so you can audit compliance &mdash; is SSH unrestricted, are any buckets public, how did this ALB change? <b>SNS alerts</b> on any change. <b>Per-Region</b>, but can be <b>aggregated across Regions and accounts</b>."],
-      ["AWS Config Rules","<b>Custom rules</b> written in Lambda, evaluated on <b>each config change</b> and/or at <b>regular intervals</b>, firing <b>EventBridge</b> when non-compliant and optionally <b>auto-remediating through SSM Automations</b>."]
+      ["AWS Config Rules","<b>Custom rules</b> written in Lambda, evaluated on <b>each config change</b> and/or at <b>regular intervals</b>, firing <b>EventBridge</b> when non-compliant and optionally <b>auto-remediating through SSM Automations</b>."],
+      ["GuardDuty","Uses <b>ML</b>, <b>30 day trial</b>, <b>no software to install</b>. Inputs: <b>CloudTrail logs, VPC Flow Logs, DNS logs, Kubernetes audit logs</b>. <b>EventBridge rule</b> for notification to SNS or Lambda. Protects against <b>cryptocurrency attacks</b>."]
     ]
   }
 ];
