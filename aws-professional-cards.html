@@ -27,6 +27,7 @@
     --c-security:#C01E36;
     --c-compute:#C25E00;
     --c-storage:#2E6B3E;
+    --c-cache:#1F6F8B;
     --c-net:#6B36D6;
     --c-dr:#C2410C;
     --c-data:#20629F;
@@ -44,7 +45,7 @@
       --ground:#0D1117; --surface:#151B24; --ink:#E4E9F1; --muted:#96A1B4;
       --faint:#6C7789; --line:#242C38; --line-soft:#1D242E;
       --accent:#F0912F; --focus:#6BA6E8; --chip-ink:#0D1117;
-      --c-org:#F5629F; --c-govern:#C081D6; --c-security:#F2647A; --c-compute:#F08A2E; --c-storage:#6FBF7F; --c-net:#A98BFF;
+      --c-org:#F5629F; --c-govern:#C081D6; --c-security:#F2647A; --c-compute:#F08A2E; --c-storage:#6FBF7F; --c-cache:#5FB8D6; --c-net:#A98BFF;
       --c-dr:#E8705C; --c-data:#5BA3E8; --c-ops:#3ECBD4; --c-cost:#A3C93F; --c-migrate:#D9A63C;
     }
   }
@@ -52,7 +53,7 @@
     --ground:#0D1117; --surface:#151B24; --ink:#E4E9F1; --muted:#96A1B4;
     --faint:#6C7789; --line:#242C38; --line-soft:#1D242E;
     --accent:#F0912F; --focus:#6BA6E8; --chip-ink:#0D1117;
-    --c-org:#F5629F; --c-govern:#C081D6; --c-security:#F2647A; --c-compute:#F08A2E; --c-storage:#6FBF7F; --c-net:#A98BFF;
+    --c-org:#F5629F; --c-govern:#C081D6; --c-security:#F2647A; --c-compute:#F08A2E; --c-storage:#6FBF7F; --c-cache:#5FB8D6; --c-net:#A98BFF;
     --c-dr:#E8705C; --c-data:#5BA3E8; --c-ops:#3ECBD4; --c-cost:#A3C93F; --c-migrate:#D9A63C;
   }
 
@@ -326,8 +327,7 @@ const CLUSTERS = [
       ["API Gateway Private API","Requires a <b>VPC interface endpoint</b>, and you must allow it in the API Gateway <b>resource policy</b> &mdash; <b>aws:SourceVpc</b> or <b>aws:SourceVpce</b>."],
       ["AWS AppSync","Managed <b>GraphQL</b> API. Single endpoint querying many data sources (DynamoDB, Aurora, Lambda, OpenSearch, HTTP). <b>Real-time subscriptions</b> over WebSocket, <b>offline sync</b> for mobile. Auth via API key, IAM, Cognito, or OIDC."],
       ["Route 53 CNAME vs Alias","<b>CNAME</b> &mdash; maps a name to any other hostname. Not valid at the zone apex, charged per query.<br><b>Alias</b> &mdash; points at an AWS resource. Works at the apex <em>and</em> subdomains, free queries, native health check. Alias is always type <b>A or AAAA</b>, never CNAME. Pair an A with an AAAA for dual-stack &mdash; that's the classic &ldquo;select TWO&rdquo; answer. <b>Never targets an EC2 instance.</b> Except for Alias, TTL is mandatory for each DNS record.<br><b>Both</b> CNAME and Alias track changing IPs, because both resolve to a name rather than a fixed address &mdash; only a <b>non-alias A record</b> breaks when IPs change."],
-      ["Route 53 Traffic Flow","Creates and maintains records in <b>complex configurations</b>. Used for <b>geoproximity bias</b> config. Saved as a <b>Traffic Flow Policy</b>."],
-      ["CloudFront Functions vs Lambda@Edge","<b>CloudFront Functions</b> &mdash; changes <b>viewer</b> requests and responses only.<br><b>Viewer Request</b>: after CloudFront receives a request from a viewer.<br><b>Viewer Response</b>: before CloudFront forwards the response to the viewer.<br><b>Lambda@Edge</b> &mdash; changes <b>CloudFront</b> requests and responses, all four trigger points.<br><b>Viewer Request</b>: after CloudFront receives a request from a viewer.<br><b>Origin Request</b>: before CloudFront forwards the request to the origin.<br><b>Origin Response</b>: after CloudFront receives the response from the origin.<br><b>Viewer Response</b>: before CloudFront forwards the response to the viewer."]
+      ["Route 53 Traffic Flow","Creates and maintains records in <b>complex configurations</b>. Used for <b>geoproximity bias</b> config. Saved as a <b>Traffic Flow Policy</b>."]
     ]
   },
   {
@@ -344,6 +344,15 @@ const CLUSTERS = [
       ["FSx replication / migration","<b>SnapMirror</b> means <b>ONTAP</b>.<br><b>Lustre</b> has <b>no multi-AZ</b> and leans on <b>S3</b> instead.<br><b>Windows</b> has no native replication, so <b>DataSync or Backup</b>.<br><b>Cannot change an existing file system</b> &mdash; all FSx types have to create a new file system and move data into it to <b>decrease volume size</b> or to replicate. Increasing is fine."],
       ["AWS DataSync","Moves large amounts of data.<br>On-premises or another cloud to AWS (NFS, SMB, HDFS, S3 API) &mdash; <b>needs an agent</b>.<br>AWS to AWS between storage services &mdash; <b>no agent</b>.<br>Synchronizes to <b>S3</b> (any storage class, including Glacier), <b>EFS</b>, and <b>FSx</b> (Windows, Lustre, NetApp, OpenZFS).<br>Replication tasks scheduled <b>hourly, daily or weekly</b>.<br><b>File permissions and metadata are preserved</b> (NFS POSIX, SMB).<br>One agent task can use <b>10 Gbps</b>, and you can set a bandwidth limit."],
       ["AWS Data Exchange","Marketplace for subscribing to <b>third-party datasets</b>, delivered to <b>S3, Redshift, or APIs</b>."]
+    ]
+  },
+  {
+    title:"Caching",
+    key:"cache",
+    axis:"",
+    col:"What it is",
+    rows:[
+      ["CloudFront Functions vs Lambda@Edge","<b>CloudFront Functions</b> &mdash; changes <b>viewer</b> requests and responses only.<br><b>Viewer Request</b>: after CloudFront receives a request from a viewer.<br><b>Viewer Response</b>: before CloudFront forwards the response to the viewer.<br><b>Lambda@Edge</b> &mdash; changes <b>CloudFront</b> requests and responses, all four trigger points.<br><b>Viewer Request</b>: after CloudFront receives a request from a viewer.<br><b>Origin Request</b>: before CloudFront forwards the request to the origin.<br><b>Origin Response</b>: after CloudFront receives the response from the origin.<br><b>Viewer Response</b>: before CloudFront forwards the response to the viewer."]
     ]
   }
 ];
