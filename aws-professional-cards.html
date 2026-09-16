@@ -318,7 +318,8 @@ const CLUSTERS = [
       ["Gateway Load Balancer","<b>GENEVE</b> protocol on port <b>6081</b>. Sits as the middle man between the source, <b>third-party virtual appliances</b>, and then the destination application &mdash; so traffic is inspected in transit without the appliances being addressed directly."],
       ["Cross zone load balancing","Evenly splits traffic <b>per target</b> in all AZs.<br><b>ALB</b> &mdash; on by default, free.<br><b>NLB / GWLB</b> &mdash; off by default, pay transfer fee."],
       ["ALB routing","<b>Round Robin</b> and <b>Least Outstanding Request</b>."],
-      ["NLB routing","<b>Flow Hash</b>."]
+      ["NLB routing","<b>Flow Hash</b>."],
+      ["API Gateway limits","<b>10 MB</b> max payload, <b>29s</b> timeout, <b>300s</b> cache TTL (min 0, max 3600)."]
     ]
   }
 ];
