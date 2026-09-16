@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AWS Logs Cards</title>
+<meta name="description" content="AWS managed logs: which service logs where.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found]){display:none!important}</style>
+<style>
+  :root{
+    --ground:#F4F6F9;
+    --surface:#FFFFFF;
+    --ink:#0F141B;
+    --muted:#59647A;
+    --faint:#8A94A6;
+    --line:#DDE3EC;
+    --line-soft:#E9EDF3;
+    --accent:#B4560A;
+    --focus:#2E73B8;
+    --chip-ink:#FFFFFF;
+
+    --c-net:#6B36D6;
+    --c-sec:#C01E36;
+    --c-app:#0E7C86;
+
+    --fs-display:'IBM Plex Sans Condensed','Helvetica Neue',Arial,sans-serif;
+    --fs-body:'IBM Plex Sans',-apple-system,'Segoe UI',Roboto,sans-serif;
+    --fs-mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#0D1117; --surface:#151B24; --ink:#E4E9F1; --muted:#96A1B4;
+      --faint:#6C7789; --line:#242C38; --line-soft:#1D242E;
+      --accent:#F0912F; --focus:#6BA6E8; --chip-ink:#0D1117;
+      --c-net:#A98BFF; --c-sec:#F2647A; --c-app:#3ECBD4;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#0D1117; --surface:#151B24; --ink:#E4E9F1; --muted:#96A1B4;
+    --faint:#6C7789; --line:#242C38; --line-soft:#1D242E;
+    --accent:#F0912F; --focus:#6BA6E8; --chip-ink:#0D1117;
+    --c-net:#A98BFF; --c-sec:#F2647A; --c-app:#3ECBD4;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--ground); color:var(--ink);
+    -webkit-text-size-adjust:100%;
+    font-family:var(--fs-body); font-size:15px; line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:2.25rem 1.5rem 4rem;}
+
+  header.mast{
+    display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;
+    gap:1.25rem 2rem;padding-bottom:1rem;border-bottom:2px solid var(--ink);
+  }
+  .brand h1{
+    font-family:var(--fs-display);font-weight:700;
+    font-size:clamp(1.9rem,4vw,2.6rem);letter-spacing:-.015em;
+    line-height:1.02;margin:0;text-wrap:balance;
+  }
+  .brand p{
+    margin:.4rem 0 0;font-family:var(--fs-mono);font-size:.72rem;
+    letter-spacing:.09em;text-transform:uppercase;color:var(--faint);
+  }
+  .toggle{
+    font-family:var(--fs-mono);font-size:.72rem;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--muted);background:var(--surface);
+    border:1px solid var(--line);border-radius:2px;padding:.55rem .8rem;
+    cursor:pointer;display:flex;align-items:center;gap:.5rem;
+  }
+  .toggle:focus-visible{outline:2px solid var(--focus);outline-offset:1px;}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--line);border:1px solid var(--faint);}
+  .controls{display:flex;flex-wrap:wrap;gap:.6rem;}
+  .toggle[aria-pressed="true"]{color:var(--chip-ink);background:var(--accent);border-color:var(--accent);}
+  .toggle[aria-pressed="true"] .dot{background:var(--chip-ink);border-color:var(--chip-ink);}
+
+  .hint{margin:.9rem 0 0;font-size:.85rem;color:var(--muted);max-width:70ch;}
+  .hint b{color:var(--ink);font-weight:600;}
+
+  .stack{display:flex;flex-direction:column;gap:1.75rem;margin-top:1.9rem;}
+
+  section.cl{
+    background:var(--surface);
+    border:1px solid var(--line-soft);
+    border-left:3px solid var(--hue);
+    padding:1rem 1.15rem 1.15rem;
+  }
+  .cl-head{display:flex;align-items:baseline;gap:.7rem;flex-wrap:wrap;}
+  .num{
+    font-family:var(--fs-mono);font-size:.7rem;font-weight:600;
+    color:var(--hue);font-variant-numeric:tabular-nums;
+  }
+  .cl-head h2{
+    font-family:var(--fs-display);font-weight:600;font-size:1.22rem;
+    margin:0;flex:1;min-width:12ch;
+  }
+  .axis{
+    margin:.5rem 0 .9rem;font-size:.85rem;color:var(--muted);
+  }
+  .axis b{
+    color:var(--hue);font-weight:600;
+  }
+
+  .tw{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;min-width:560px;}
+  th{
+    text-align:left;font-family:var(--fs-mono);font-size:.66rem;
+    letter-spacing:.09em;text-transform:uppercase;color:var(--faint);
+    font-weight:500;padding:0 .8rem .45rem 0;border-bottom:1px solid var(--line);
+    white-space:nowrap;
+  }
+  th:last-child,td:last-child{padding-right:0;}
+  td{
+    padding:.55rem .8rem;vertical-align:top;font-size:.83rem;
+    border-bottom:1px solid var(--line-soft);
+  }
+  td:first-child{padding-left:0;}
+  tr:last-child td{border-bottom:0;}
+  td.svc{white-space:nowrap;width:1%;}
+  td.svc b{
+    font-family:var(--fs-mono);font-size:.79rem;font-weight:600;color:var(--hue);
+  }
+  body.blank td.svc b{
+    color:transparent;background:var(--line);border-radius:2px;
+    cursor:pointer;display:inline-block;min-width:7rem;
+    transition:background .18s ease;
+  }
+  body.blank td.svc b:hover{background:var(--line-soft);}
+  body.blank td.svc b.on{color:var(--hue);background:none;cursor:default;}
+  @media (prefers-reduced-motion: reduce){*{transition:none !important;}}
+
+  footer{
+    margin-top:2.5rem;padding-top:1rem;border-top:1px solid var(--line);
+    font-family:var(--fs-mono);font-size:.7rem;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--faint);
+    display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;justify-content:space-between;
+  }
+
+  /* ---- mobile: tables become stacked cards, no sideways scrolling ---- */
+  @media (max-width:700px){
+    .wrap{padding:1.4rem 1rem 3rem;}
+    header.mast{align-items:stretch;gap:.9rem;}
+    .controls{width:100%;}
+    .toggle{flex:1 1 auto;justify-content:center;padding:.65rem .7rem;}
+
+    .stack{gap:1.15rem;margin-top:1.4rem;}
+    section.cl{padding:.9rem .95rem 1rem;}
+    .cl-head h2{font-size:1.12rem;}
+    .axis{font-size:.82rem;margin-bottom:.75rem;}
+
+    .tw{overflow-x:visible;}
+    table{min-width:0;display:block;}
+    thead{display:none;}
+    tbody{display:block;}
+    tr{
+      display:block;
+      padding:.6rem 0;
+      border-bottom:1px solid var(--line-soft);
+    }
+    tr:last-child{border-bottom:0;padding-bottom:0;}
+    td{
+      display:block;
+      padding:0;
+      border:0;
+      font-size:.82rem;
+    }
+    td + td{margin-top:.3rem;}
+
+    td[data-label]:not(.svc)::before{
+      content:attr(data-label);
+      display:block;
+      font-family:var(--fs-mono);
+      font-size:.6rem;
+      letter-spacing:.09em;
+      text-transform:uppercase;
+      color:var(--faint);
+      margin-bottom:.1rem;
+    }
+    td.svc{width:auto;white-space:normal;margin-bottom:.15rem;}
+    td.svc b{font-size:.86rem;}
+    body.blank td.svc b{min-width:8rem;}
+  }
+
+  @media (max-width:400px){
+    .brand h1{font-size:1.7rem;}
+    .toggle{font-size:.68rem;}
+  }
+</style>
+</head>
+<body>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <div class="brand">
+      <h1>AWS Logs Cards</h1>
+      <p><span id="count">0</span> sections &middot; which service logs where</p>
+    </div>
+    <div class="controls">
+      <button class="toggle" id="blank" aria-pressed="false"><span class="dot"></span>Blank mode</button>
+      <button class="toggle" id="shuffle" aria-pressed="false"><span class="dot"></span>Shuffle</button>
+    </div>
+  </header>
+
+  <p class="hint" id="hint">Nearly every destination is some subset of <b>S3</b>, <b>CloudWatch Logs</b> and <b>Firehose</b> &mdash; the exam tests which. Turn on <b>Blank mode</b> to hide the log source and work backward from the destination.</p>
+
+  <div class="stack" id="stack"></div>
+
+  <footer>
+    <span>S3 for retention &middot; CloudWatch Logs for alarms &middot; Firehose for streaming</span>
+    <span>SAP-C02 scope</span>
+  </footer>
+</div>
+
+<script>
+const CLUSTERS = [
+  {
+    title:"Network &amp; delivery",
+    key:"net",
+    axis:"",
+    col:"Destination",
+    rows:[
+      ["ALB / NLB / CLB access logs","<b>S3</b> only. Per-request access logs for your load balancers."],
+      ["ALB connection logs","<b>S3</b> only. Connection-level TLS detail &mdash; separate feature from access logs."],
+      ["CloudFront access logs","<b>S3</b>. Detailed information about every user request CloudFront receives."],
+      ["Global Accelerator flow logs","<b>S3</b> only."],
+      ["VPC Flow Logs","<b>S3, CloudWatch Logs, Firehose</b>. IP traffic to and from network interfaces in your VPC."],
+      ["Transit Gateway Flow Logs","<b>S3, CloudWatch Logs, Firehose</b>. Same shape as VPC Flow Logs, at the TGW attachment."],
+      ["Route 53 public query logs","<b>CloudWatch Logs</b> only. Queries against a public hosted zone."],
+      ["Route 53 Resolver query logs","<b>S3, CloudWatch Logs, Firehose</b>. DNS queries made <em>from inside</em> your VPC &mdash; a different feature from public query logging, and the one used for exfiltration investigations."],
+      ["Client VPN connection logs","<b>CloudWatch Logs</b> only."]
+    ]
+  },
+  {
+    title:"Security &amp; audit",
+    key:"sec",
+    axis:"",
+    col:"Destination",
+    rows:[
+      ["CloudTrail","<b>S3 and CloudWatch Logs</b>. API calls made within your account."],
+      ["AWS Config","<b>S3</b> for configuration history and snapshots, <b>SNS</b> for change notifications."],
+      ["WAF logs","<b>CloudWatch Logs</b> (5 MB per second), <b>S3</b> (5 minute interval), <b>Firehose</b> (Firehose quotas)."],
+      ["Network Firewall logs","<b>S3, CloudWatch Logs, Firehose</b>. Alert, flow and TLS logs."]
+    ]
+  },
+  {
+    title:"Application &amp; data",
+    key:"app",
+    axis:"",
+    col:"Destination",
+    rows:[
+      ["S3 server access logs","<b>S3</b>. Detailed records of requests made to a bucket. Hours to deliver, best effort."],
+      ["RDS / Aurora database logs","<b>CloudWatch Logs</b>. Slow query, error and audit logs published from the DB instance."],
+      ["API Gateway access logs","<b>CloudWatch Logs or Firehose</b>."],
+      ["API Gateway execution logs","<b>CloudWatch Logs</b> only."],
+      ["EKS control plane logs","<b>CloudWatch Logs</b> only."],
+      ["Lambda logs","<b>CloudWatch Logs</b>, automatically, with nothing to enable."]
+    ]
+  }
+];
+
+const stack = document.getElementById('stack');
+
+CLUSTERS.forEach((c, i) => {
+  const sec = document.createElement('section');
+  sec.className = 'cl';
+  sec.style.setProperty('--hue', `var(--c-${c.key})`);
+
+  const head = document.createElement('div');
+  head.className = 'cl-head';
+  head.innerHTML = `<span class="num">${String(i+1).padStart(2,'0')}</span><h2>${c.title}</h2>`;
+  sec.append(head);
+
+  if (c.axis) {
+    const axis = document.createElement('p');
+    axis.className = 'axis';
+    axis.innerHTML = `Deciding axis: <b>${c.axis}</b>`;
+    sec.append(axis);
+  }
+
+  const tw = document.createElement('div');
+  tw.className = 'tw';
+  const body = c.rows.map(([svc, what]) =>
+    `<tr><td class="svc" data-label="Service"><b tabindex="0" role="button">${svc}</b></td>`
+    + `<td data-label="${c.col.replace(/<[^>]*>/g,'')}">${what}</td></tr>`
+  ).join('');
+  tw.innerHTML =
+    `<table><thead><tr><th>Service</th><th>${c.col}</th></tr></thead><tbody>${body}</tbody></table>`;
+  sec.append(tw);
+
+  stack.append(sec);
+});
+
+document.getElementById('count').textContent = CLUSTERS.length;
+
+function reveal(el){
+  if (document.body.classList.contains('blank')) el.classList.add('on');
+}
+stack.addEventListener('click', e => {
+  const b = e.target.closest('td.svc b');
+  if (b) reveal(b);
+});
+stack.addEventListener('keydown', e => {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('td.svc b')) {
+    e.preventDefault();
+    reveal(e.target);
+  }
+});
+
+/* shuffle — within each cluster's table; toggling off restores the original order */
+const shuf = document.getElementById('shuffle');
+const original = new Map();
+document.querySelectorAll('section.cl tbody').forEach(tb => {
+  original.set(tb, Array.from(tb.querySelectorAll('tr')));
+});
+shuf.addEventListener('click', () => {
+  const on = shuf.getAttribute('aria-pressed') !== 'true';
+  shuf.setAttribute('aria-pressed', String(on));
+  original.forEach((rows, tb) => {
+    const order = rows.slice();
+    if (on) for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    order.forEach(r => tb.append(r));
+  });
+});
+
+const btn = document.getElementById('blank');
+const hint = document.getElementById('hint');
+btn.addEventListener('click', () => {
+  const on = document.body.classList.toggle('blank');
+  btn.setAttribute('aria-pressed', String(on));
+  if (!on) document.querySelectorAll('td.svc b.on').forEach(b => b.classList.remove('on'));
+  hint.innerHTML = on
+    ? 'Names hidden. Read across the row and name it before you click &mdash; at professional level the row you can describe but not name is the one that will cost you.'
+    : 'Built up section by section while studying &mdash; only what has actually been covered. Turn on <b>Blank mode</b> to hide the names and work backward from the behavior.';
+});
+</script>
+</body>
+</html>
