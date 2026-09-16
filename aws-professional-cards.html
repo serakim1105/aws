@@ -313,7 +313,8 @@ const CLUSTERS = [
       ["EC2 Graviton","ARM processors giving the <b>best price performance</b>. Supports many Linux distributions &mdash; Amazon Linux 2, RedHat, SUSE, Ubuntu &mdash; but <b>not available for Windows</b>.<br><b>Graviton2</b> &mdash; 40% better price performance than comparable 5th generation x86 instances.<br><b>Graviton3</b> &mdash; up to 3x better performance than Graviton2.<br>Use cases: app servers, microservices, HPC, CPU-based ML, video encoding, gaming, in-memory caches."],
       ["EC2 instance recovery","A CloudWatch alarm on <b>StatusCheckFailed_System</b> &mdash; the underlying hardware, as opposed to <b>StatusCheckFailed_Instance</b> which checks the VM &mdash; that recovers the instance and can alert an <b>SNS topic</b> at the same time. Recovery preserves the <b>same private, public and Elastic IPs, metadata and placement group</b>."],
       ["EC2 Enhanced Networking","Uses the <b>Elastic Network Adapter (ENA)</b>."],
-      ["Elastic Fabric Adapter (EFA)","Improved ENA for <b>HPC</b>, <b>only for Linux</b>."]
+      ["Elastic Fabric Adapter (EFA)","Improved ENA for <b>HPC</b>, <b>only for Linux</b>."],
+      ["ECS / EKS storage","<b>Choosing:</b><br>One task or pod, block, high IOPS &rarr; <b>EBS</b>, and you are pinned to one AZ.<br>Many, across AZs &rarr; <b>EFS</b>.<br>Windows &rarr; <b>FSx for Windows</b>.<br>HPC &rarr; <b>FSx for Lustre</b>.<br>Fargate plus persistent storage &rarr; <b>EFS</b> is the safe answer every time.<br><b>ECS supports:</b> EFS, EBS, FSx for Windows.<br><b>EKS supports:</b> EBS, EFS, Lustre, ONTAP/OpenZFS &mdash; everything goes through a <b>CSI driver</b>.<br><b>EKS on Fargate supports EFS only.</b>"]
     ]
   }
 ];
