@@ -322,7 +322,8 @@ const CLUSTERS = [
       ["API Gateway limits","<b>10 MB</b> max payload, <b>29s</b> timeout, <b>300s</b> cache TTL (min 0, max 3600)."],
       ["API Gateway observability","CloudWatch <b>Metrics</b> aggregate per stage &mdash; Count, 4XX/5XX, Latency vs IntegrationLatency.<br>CloudWatch <b>Logs</b> are per-request within the gateway &mdash; access logs for who/what/status, execution logs for authorizer and mapping-template internals.<br><b>X-Ray</b> traces one request <b>across services</b> to show which downstream hop is slow."],
       ["API Gateway WebSocket API / @connections","<b>Stateful two-way communication</b>."],
-      ["API Gateway Private API","Requires a <b>VPC interface endpoint</b>, and you must allow it in the API Gateway <b>resource policy</b> &mdash; <b>aws:SourceVpc</b> or <b>aws:SourceVpce</b>."]
+      ["API Gateway Private API","Requires a <b>VPC interface endpoint</b>, and you must allow it in the API Gateway <b>resource policy</b> &mdash; <b>aws:SourceVpc</b> or <b>aws:SourceVpce</b>."],
+      ["AWS AppSync","Managed <b>GraphQL</b> API. Single endpoint querying many data sources (DynamoDB, Aurora, Lambda, OpenSearch, HTTP). <b>Real-time subscriptions</b> over WebSocket, <b>offline sync</b> for mobile. Auth via API key, IAM, Cognito, or OIDC."]
     ]
   }
 ];
