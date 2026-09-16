@@ -362,7 +362,9 @@ const CLUSTERS = [
     axis:"",
     col:"What it is",
     rows:[
-      ["DynamoDB indexes","You can only query by <b>partition key + sort key</b>, or by an <b>index</b>.<br><b>LSI</b> (Local Secondary Index) &mdash; keeps the <b>same partition key</b>, alternate sort key, defined at <b>creation time</b>.<br><b>GSI</b> (Global Secondary Index) &mdash; can change <b>both keys</b>, defined <b>after the table is created</b>."]
+      ["DynamoDB indexes","You can only query by <b>partition key + sort key</b>, or by an <b>index</b>.<br><b>LSI</b> (Local Secondary Index) &mdash; keeps the <b>same partition key</b>, alternate sort key, defined at <b>creation time</b>.<br><b>GSI</b> (Global Secondary Index) &mdash; can change <b>both keys</b>, defined <b>after the table is created</b>."],
+      ["Failover targets","<b>RDS Multi-AZ</b> &rarr; <b>standby replica</b> (not readable).<br><b>Aurora</b> &rarr; <b>Aurora replica</b> (readable).<br><b>DynamoDB</b> &rarr; none; uses <b>Global Tables</b> across Regions.<br><b>No snapshots</b> are used for failover for any of these databases."],
+      ["Convert RDS to Aurora","Uses a <b>snapshot</b> or a <b>read replica</b>."]
     ]
   }
 ];
