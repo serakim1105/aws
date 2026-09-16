@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AWS Logs Cards</title>
-<meta name="description" content="AWS managed logs: which service logs where.">
+<title>AWS Logs and Multi-AZ Cards</title>
+<meta name="description" content="AWS managed logs and storage multi-AZ / multi-Region support.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
@@ -199,8 +199,8 @@
 <div class="wrap">
   <header class="mast">
     <div class="brand">
-      <h1>AWS Logs Cards</h1>
-      <p><span id="count">0</span> sections &middot; which service logs where</p>
+      <h1>AWS Logs and Multi-AZ Cards</h1>
+      <p><span id="count">0</span> sections &middot; lookup tables</p>
     </div>
     <div class="controls">
       <button class="toggle" id="blank" aria-pressed="false"><span class="dot"></span>Blank mode</button>
@@ -208,12 +208,12 @@
     </div>
   </header>
 
-  <p class="hint" id="hint">Nearly every destination is some subset of <b>S3</b>, <b>CloudWatch Logs</b> and <b>Firehose</b> &mdash; the exam tests which. Turn on <b>Blank mode</b> to hide the destinations and name them from the log source.</p>
+  <p class="hint" id="hint">Two lookup tables: where each managed log can be delivered, and which storage services survive an AZ or Region. Turn on <b>Blank mode</b> to hide the answers and work from the service name.</p>
 
   <div class="stack" id="stack"></div>
 
   <footer>
-    <span>S3 for retention &middot; CloudWatch Logs for alarms &middot; Firehose for streaming</span>
+    <span>Logs: S3 for retention, CloudWatch Logs for alarms, Firehose for streaming</span>
     <span>SAP-C02 scope</span>
   </footer>
 </div>
@@ -262,6 +262,24 @@ const CLUSTERS = [
       ["EKS control plane logs","<b>CloudWatch Logs</b> only."],
       ["Lambda logs","<b>CloudWatch Logs</b>, automatically, with nothing to enable."]
     ]
+  },
+  {
+    title:"Multi-AZ and multi-Region",
+    key:"sec",
+    axis:"",
+    col:["Multi-AZ","Multi-Region"],
+    rows:[
+      ["EBS","<b>No</b> &mdash; always one AZ.","Snapshot copy, cross-Region and cross-account."],
+      ["EBS Multi-Attach (io1/io2 only)","<b>No</b> &mdash; several instances share one volume, but within <b>one AZ</b>. Multi-<em>instance</em>, not multi-AZ, and a common conflation.","No."],
+      ["Instance store","<b>No</b> &mdash; one host.","<b>None.</b> Ephemeral, no snapshots exist."],
+      ["EFS Regional","<b>Yes</b>, by default.","EFS Replication, RPO ~15 min."],
+      ["EFS One Zone","<b>No</b> &mdash; deliberately single AZ.","EFS Replication."],
+      ["FSx Windows","<b>Yes</b> &mdash; active/standby pair with automatic failover.","No native. DFS Replication, DataSync, or backup copy."],
+      ["FSx Lustre","<b>No</b> &mdash; single AZ only.","No native. S3 data repository association; backup copy on Persistent."],
+      ["FSx Lustre Scratch vs Persistent","<b>Scratch</b> has no replication even inside the AZ and no backups &mdash; data is simply gone on failure. <b>Persistent</b> replicates within the AZ and supports backups.","Backup copy on Persistent only."],
+      ["FSx ONTAP","<b>Yes</b>.","<b>SnapMirror</b> &mdash; native, cross-AZ and cross-Region."],
+      ["FSx OpenZFS","<b>Yes</b>.","Backup copy cross-Region."]
+    ]
   }
 ];
 
@@ -286,12 +304,16 @@ CLUSTERS.forEach((c, i) => {
 
   const tw = document.createElement('div');
   tw.className = 'tw';
-  const body = c.rows.map(([svc, what]) =>
-    `<tr><td class="svc" data-label="Service"><b>${svc}</b></td>`
-    + `<td class="dest" data-label="${c.col.replace(/<[^>]*>/g,'')}"><span tabindex="0" role="button">${what}</span></td></tr>`
+  const cols = Array.isArray(c.col) ? c.col : [c.col];
+  const body = c.rows.map(r =>
+    `<tr><td class="svc" data-label="Service"><b>${r[0]}</b></td>`
+    + r.slice(1).map((v, i) =>
+        `<td class="dest" data-label="${cols[i].replace(/<[^>]*>/g,'')}"><span tabindex="0" role="button">${v}</span></td>`
+      ).join('')
+    + `</tr>`
   ).join('');
   tw.innerHTML =
-    `<table><thead><tr><th>Service</th><th>${c.col}</th></tr></thead><tbody>${body}</tbody></table>`;
+    `<table><thead><tr><th>Service</th>${cols.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table>`;
   sec.append(tw);
 
   stack.append(sec);
@@ -339,8 +361,8 @@ btn.addEventListener('click', () => {
   btn.setAttribute('aria-pressed', String(on));
   if (!on) document.querySelectorAll('td.dest span.on').forEach(b => b.classList.remove('on'));
   hint.innerHTML = on
-    ? 'Destinations hidden. Name where each log can be delivered before you click &mdash; S3, CloudWatch Logs, Firehose, or some subset.'
-    : 'Nearly every destination is some subset of <b>S3</b>, <b>CloudWatch Logs</b> and <b>Firehose</b> &mdash; the exam tests which. Turn on <b>Blank mode</b> to hide the destinations and name them from the log source.';
+    ? 'Answers hidden. Name the destinations, or the multi-AZ and multi-Region support, before you click.'
+    : 'Two lookup tables: where each managed log can be delivered, and which storage services survive an AZ or Region. Turn on <b>Blank mode</b> to hide the answers and work from the service name.';
 });
 </script>
 </body>
