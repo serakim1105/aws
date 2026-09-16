@@ -314,7 +314,8 @@ const CLUSTERS = [
       ["EC2 instance recovery","A CloudWatch alarm on <b>StatusCheckFailed_System</b> &mdash; the underlying hardware, as opposed to <b>StatusCheckFailed_Instance</b> which checks the VM &mdash; that recovers the instance and can alert an <b>SNS topic</b> at the same time. Recovery preserves the <b>same private, public and Elastic IPs, metadata and placement group</b>."],
       ["EC2 Enhanced Networking","Uses the <b>Elastic Network Adapter (ENA)</b>."],
       ["Elastic Fabric Adapter (EFA)","Improved ENA for <b>HPC</b>, <b>only for Linux</b>."],
-      ["ECS / EKS storage","<b>Choosing:</b><br>One task or pod, block, high IOPS &rarr; <b>EBS</b>, and you are pinned to one AZ.<br>Many, across AZs &rarr; <b>EFS</b>.<br>Windows &rarr; <b>FSx for Windows</b>.<br>HPC &rarr; <b>FSx for Lustre</b>.<br>Fargate plus persistent storage &rarr; <b>EFS</b> is the safe answer every time.<br><b>ECS supports:</b> EFS, EBS, FSx for Windows.<br><b>EKS supports:</b> EBS, EFS, Lustre, ONTAP/OpenZFS &mdash; everything goes through a <b>CSI driver</b>.<br><b>EKS on Fargate supports EFS only.</b>"]
+      ["ECS / EKS storage","<b>Choosing:</b><br>One task or pod, block, high IOPS &rarr; <b>EBS</b>, and you are pinned to one AZ.<br>Many, across AZs &rarr; <b>EFS</b>.<br>Windows &rarr; <b>FSx for Windows</b>.<br>HPC &rarr; <b>FSx for Lustre</b>.<br>Fargate plus persistent storage &rarr; <b>EFS</b> is the safe answer every time.<br><b>ECS supports:</b> EFS, EBS, FSx for Windows.<br><b>EKS supports:</b> EBS, EFS, Lustre, ONTAP/OpenZFS &mdash; everything goes through a <b>CSI driver</b>.<br><b>EKS on Fargate supports EFS only.</b>"],
+      ["Gateway Load Balancer","<b>GENEVE</b> protocol on port <b>6081</b>. Sits as the middle man between the source, <b>third-party virtual appliances</b>, and then the destination application &mdash; so traffic is inspected in transit without the appliances being addressed directly."]
     ]
   }
 ];
