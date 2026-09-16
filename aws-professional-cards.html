@@ -336,7 +336,8 @@ const CLUSTERS = [
     col:"What it is",
     rows:[
       ["Amazon Data Lifecycle Manager (DLM)","Automates the creation, retention and deletion of <b>EBS snapshots and EBS-backed AMIs</b>. Schedules backups, cross-account snapshot copies, and deletion of outdated backups.<br>Uses resource <b>tags</b> to identify what to act on (EC2 instances, EBS volumes).<br><b>Cannot</b> manage snapshots or AMIs created <b>outside DLM</b>.<br><b>Cannot</b> manage <b>instance-store backed AMIs</b>."],
-      ["DLM vs AWS Backup","<b>DLM</b> &mdash; automate creation, retention and deletion of <b>EBS snapshots</b>.<br><b>AWS Backup</b> &mdash; manage and monitor backups <b>across the AWS services you use</b>, including EBS, from a <b>single place</b>."]
+      ["DLM vs AWS Backup","<b>DLM</b> &mdash; automate creation, retention and deletion of <b>EBS snapshots</b>.<br><b>AWS Backup</b> &mdash; manage and monitor backups <b>across the AWS services you use</b>, including EBS, from a <b>single place</b>."],
+      ["Storage Class Analysis vs Storage Lens","<b>S3 Storage Class Analysis</b> &mdash; <b>one bucket</b> (optionally by prefix or tag). Tells you <b>when to transition Standard &rarr; Standard-IA</b>; daily CSV export plus a console chart, and needs ~30 days of observation to mean anything.<br><b>S3 Storage Lens</b> &mdash; <b>organization-wide</b> across all buckets, accounts and Regions. Usage and activity metrics plus cost-optimization recommendations; free tier is usage only at bucket level with 14-day retention, paid advanced tier adds activity, prefix-level detail and 15-month retention.<br><b>Intelligent-Tiering</b> is the third option &mdash; Storage Class Analysis tells you what to configure, Intelligent-Tiering just does it, so it usually wins on &ldquo;least operational effort&rdquo;."]
     ]
   }
 ];
