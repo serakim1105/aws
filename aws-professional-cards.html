@@ -296,7 +296,8 @@ const CLUSTERS = [
       ["Amazon Inspector","Only for <b>EC2, container images (ECR), and Lambda functions</b>. Scans for <b>CVEs</b> and <b>network reachability</b>. Runs when <b>inventory or CVE updates</b>. Reports in <b>AWS Security Hub</b> and sends findings to <b>EventBridge</b>."],
       ["AWS Config","Records your resource configurations and their <b>changes over time</b> so you can audit compliance &mdash; is SSH unrestricted, are any buckets public, how did this ALB change? <b>SNS alerts</b> on any change. <b>Per-Region</b>, but can be <b>aggregated across Regions and accounts</b>."],
       ["AWS Config Rules","<b>Custom rules</b> written in Lambda, evaluated on <b>each config change</b> and/or at <b>regular intervals</b>, firing <b>EventBridge</b> when non-compliant and optionally <b>auto-remediating through SSM Automations</b>."],
-      ["GuardDuty","Uses <b>ML</b>, <b>30 day trial</b>, <b>no software to install</b>. Inputs: <b>CloudTrail logs, VPC Flow Logs, DNS logs, Kubernetes audit logs</b>. <b>EventBridge rule</b> for notification to SNS or Lambda. Protects against <b>cryptocurrency attacks</b>."]
+      ["GuardDuty","Uses <b>ML</b>, <b>30 day trial</b>, <b>no software to install</b>. Inputs: <b>CloudTrail logs, VPC Flow Logs, DNS logs, Kubernetes audit logs</b>. <b>EventBridge rule</b> for notification to SNS or Lambda. Protects against <b>cryptocurrency attacks</b>."],
+      ["AWS Security Hub","The central <b>multi-account dashboard</b> that <b>automates security checks</b> and <b>aggregates findings</b> from Config, GuardDuty, Inspector, Macie, IAM Access Analyzer, Systems Manager, Firewall Manager, Health and partner tools. <b>Requires AWS Config to be enabled first.</b> Generates <b>EventBridge</b> events, and findings can be investigated with <b>Amazon Detective</b>."]
     ]
   }
 ];
