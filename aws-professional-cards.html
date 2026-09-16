@@ -307,7 +307,9 @@ const CLUSTERS = [
     axis:"",
     col:"What it is",
     rows:[
-      ["EC2 instance types","<b>R</b> &mdash; a lot of RAM; in-memory caches.<br><b>C</b> &mdash; good CPU; compute / databases.<br><b>M</b> &mdash; balanced (think &ldquo;medium&rdquo;); general / web app.<br><b>I</b> &mdash; good local I/O (instance storage); databases.<br><b>G</b> &mdash; GPU; video rendering / machine learning.<br><b>T2 / T3</b> &mdash; burstable instances, up to a capacity.<br><b>T2 / T3 unlimited</b> &mdash; unlimited burst."]
+      ["EC2 instance types","<b>R</b> &mdash; a lot of RAM; in-memory caches.<br><b>C</b> &mdash; good CPU; compute / databases.<br><b>M</b> &mdash; balanced (think &ldquo;medium&rdquo;); general / web app.<br><b>I</b> &mdash; good local I/O (instance storage); databases.<br><b>G</b> &mdash; GPU; video rendering / machine learning.<br><b>T2 / T3</b> &mdash; burstable instances, up to a capacity.<br><b>T2 / T3 unlimited</b> &mdash; unlimited burst."],
+      ["EC2 placement groups","Controls the instance placement strategy.<br><b>Cluster</b> &mdash; packs instances into a low-latency group in a <b>single AZ</b>.<br><b>Spread</b> &mdash; spreads instances across distinct underlying hardware, <b>max 7 per group per AZ</b>; critical applications.<br><b>Partition</b> &mdash; spreads instances across many partitions, each on a different set of racks, within an AZ. Scales to <b>hundreds</b> of instances per group (Hadoop, Cassandra, Kafka)."],
+      ["Moving an instance between placement groups","You <b>can</b> move an instance into or out of a placement group, in three steps:<br><b>stop</b> the instance<br>use the CLI &mdash; <b>modify-instance-placement</b><br><b>start</b> the instance."]
     ]
   }
 ];
