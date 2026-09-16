@@ -126,13 +126,13 @@
   td.svc b{
     font-family:var(--fs-mono);font-size:.79rem;font-weight:600;color:var(--hue);
   }
-  body.blank td.svc b{
+  body.blank td.dest span{
     color:transparent;background:var(--line);border-radius:2px;
     cursor:pointer;display:inline-block;min-width:7rem;
     transition:background .18s ease;
   }
-  body.blank td.svc b:hover{background:var(--line-soft);}
-  body.blank td.svc b.on{color:var(--hue);background:none;cursor:default;}
+  body.blank td.dest span:hover{background:var(--line-soft);}
+  body.blank td.dest span.on{color:inherit;background:none;cursor:default;}
   @media (prefers-reduced-motion: reduce){*{transition:none !important;}}
 
   footer{
@@ -184,7 +184,7 @@
     }
     td.svc{width:auto;white-space:normal;margin-bottom:.15rem;}
     td.svc b{font-size:.86rem;}
-    body.blank td.svc b{min-width:8rem;}
+    body.blank td.dest span{min-width:8rem;}
   }
 
   @media (max-width:400px){
@@ -208,7 +208,7 @@
     </div>
   </header>
 
-  <p class="hint" id="hint">Nearly every destination is some subset of <b>S3</b>, <b>CloudWatch Logs</b> and <b>Firehose</b> &mdash; the exam tests which. Turn on <b>Blank mode</b> to hide the log source and work backward from the destination.</p>
+  <p class="hint" id="hint">Nearly every destination is some subset of <b>S3</b>, <b>CloudWatch Logs</b> and <b>Firehose</b> &mdash; the exam tests which. Turn on <b>Blank mode</b> to hide the destinations and name them from the log source.</p>
 
   <div class="stack" id="stack"></div>
 
@@ -287,8 +287,8 @@ CLUSTERS.forEach((c, i) => {
   const tw = document.createElement('div');
   tw.className = 'tw';
   const body = c.rows.map(([svc, what]) =>
-    `<tr><td class="svc" data-label="Service"><b tabindex="0" role="button">${svc}</b></td>`
-    + `<td data-label="${c.col.replace(/<[^>]*>/g,'')}">${what}</td></tr>`
+    `<tr><td class="svc" data-label="Service"><b>${svc}</b></td>`
+    + `<td class="dest" data-label="${c.col.replace(/<[^>]*>/g,'')}"><span tabindex="0" role="button">${what}</span></td></tr>`
   ).join('');
   tw.innerHTML =
     `<table><thead><tr><th>Service</th><th>${c.col}</th></tr></thead><tbody>${body}</tbody></table>`;
@@ -303,11 +303,11 @@ function reveal(el){
   if (document.body.classList.contains('blank')) el.classList.add('on');
 }
 stack.addEventListener('click', e => {
-  const b = e.target.closest('td.svc b');
+  const b = e.target.closest('td.dest span');
   if (b) reveal(b);
 });
 stack.addEventListener('keydown', e => {
-  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('td.svc b')) {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('td.dest span')) {
     e.preventDefault();
     reveal(e.target);
   }
@@ -337,10 +337,10 @@ const hint = document.getElementById('hint');
 btn.addEventListener('click', () => {
   const on = document.body.classList.toggle('blank');
   btn.setAttribute('aria-pressed', String(on));
-  if (!on) document.querySelectorAll('td.svc b.on').forEach(b => b.classList.remove('on'));
+  if (!on) document.querySelectorAll('td.dest span.on').forEach(b => b.classList.remove('on'));
   hint.innerHTML = on
-    ? 'Names hidden. Read across the row and name it before you click &mdash; at professional level the row you can describe but not name is the one that will cost you.'
-    : 'Built up section by section while studying &mdash; only what has actually been covered. Turn on <b>Blank mode</b> to hide the names and work backward from the behavior.';
+    ? 'Destinations hidden. Name where each log can be delivered before you click &mdash; S3, CloudWatch Logs, Firehose, or some subset.'
+    : 'Nearly every destination is some subset of <b>S3</b>, <b>CloudWatch Logs</b> and <b>Firehose</b> &mdash; the exam tests which. Turn on <b>Blank mode</b> to hide the destinations and name them from the log source.';
 });
 </script>
 </body>
