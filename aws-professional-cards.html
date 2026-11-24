@@ -245,7 +245,9 @@ const CLUSTERS = [
       ["AD FS (Active Directory Federation Services)","Provides SSO across applications, issuing <b>SAML</b> assertions to third-party service providers &mdash; AWS Management Console, Dropbox, Office 365."],
       ["AWS Managed Microsoft AD","Actual domain controllers running in AWS. Works on its own, or with on-prem AD over <b>Direct Connect or Site-to-Site VPN</b>. Trust can go <b>both ways</b>; replication is <b>not</b> included by default. If the VPN or DX goes down you lose the on-prem side &mdash; the fix is an on-prem AD replica on <b>EC2</b> in AWS, with two-way trust to and from the managed directory."],
       ["AD Connector","A directory <b>gateway</b> that redirects requests to on-prem AD &mdash; on-prem only, proxied from AWS. <b>No caching, no RDS SQL Server, no trust relationship.</b> Still requires Direct Connect or VPN, and if that connection goes down you have no AD."],
-      ["Simple AD","Cheap. <b>No MFA, no RDS SQL Server, no AWS SSO (IAM Identity Center), no trust relationship.</b> Sized for 500 users (Small) up to 5,000 (Large)."]
+      ["Simple AD","Cheap. <b>No MFA, no RDS SQL Server, no AWS SSO (IAM Identity Center), no trust relationship.</b> Sized for 500 users (Small) up to 5,000 (Large)."],
+      ["Amazon Verified Permissions","<b>Fine-grained authorization inside an application you built</b> &mdash; may this user perform this action on this resource? Not for AWS API access, which is IAM.<br>Policies are written in <b>Cedar</b> and kept in a <b>policy store</b> &mdash; one per application, or <b>one per tenant</b> for multi-tenant &mdash; so authorization logic moves out of the application code.<br>The application calls <b>IsAuthorized</b>, or <b>IsAuthorizedWithToken</b> with a JWT from an identity source: a <b>Cognito user pool</b> or an <b>OIDC</b> provider.<br>It <b>does not authenticate</b> anyone; the user has already signed in somewhere else."],
+      ["AWS Verified Access","<b>VPN-less</b> access to corporate applications on <b>zero-trust</b> terms &mdash; every request is evaluated, not just the first sign-in.<br>Trust data comes from a <b>user-identity</b> trust provider (<b>IAM Identity Center</b> or any <b>OIDC</b> IdP) and optionally a <b>device</b> trust provider (CrowdStrike, Jamf, JumpCloud). Access policies are written in <b>Cedar</b>.<br>Endpoints front a <b>load balancer</b>, <b>network interface</b>, <b>network CIDR</b> or <b>RDS</b>.<br>A <b>WAF</b> web ACL can be attached, and every access attempt is logged in <b>OCSF</b> format to CloudWatch Logs, S3 or Firehose.<br>Not Verified Permissions &mdash; that authorizes actions <b>inside</b> an application; this decides who may <b>reach</b> it."]
     ]
   },
   {
@@ -300,7 +302,8 @@ const CLUSTERS = [
       ["AWS Config","Records your resource configurations and their <b>changes over time</b> so you can audit compliance &mdash; is SSH unrestricted, are any buckets public, how did this ALB change? <b>SNS alerts</b> on any change. <b>Per-Region</b>, but can be <b>aggregated across Regions and accounts</b>."],
       ["AWS Config Rules","<b>Custom rules</b> written in Lambda, evaluated on <b>each config change</b> and/or at <b>regular intervals</b>, firing <b>EventBridge</b> when non-compliant and optionally <b>auto-remediating through SSM Automations</b>."],
       ["GuardDuty","Uses <b>ML</b>, <b>30 day trial</b>, <b>no software to install</b>. Inputs: <b>CloudTrail logs, VPC Flow Logs, DNS logs, Kubernetes audit logs</b>. <b>EventBridge rule</b> for notification to SNS or Lambda. Protects against <b>cryptocurrency attacks</b>."],
-      ["AWS Security Hub","The central <b>multi-account dashboard</b> that <b>automates security checks</b> and <b>aggregates findings</b> from Config, GuardDuty, Inspector, Macie, IAM Access Analyzer, Systems Manager, Firewall Manager, Health and partner tools. <b>Requires AWS Config to be enabled first.</b> Generates <b>EventBridge</b> events, and findings can be investigated with <b>Amazon Detective</b>."]
+      ["AWS Security Hub","The central <b>multi-account dashboard</b> that <b>automates security checks</b> and <b>aggregates findings</b> from Config, GuardDuty, Inspector, Macie, IAM Access Analyzer, Systems Manager, Firewall Manager, Health and partner tools. <b>Requires AWS Config to be enabled first.</b> Generates <b>EventBridge</b> events, and findings can be investigated with <b>Amazon Detective</b>."],
+      ["Amazon Security Lake","A managed <b>data lake for security logs</b>, held in <b>S3 buckets you own</b>. It collects logs and events across accounts and Regions, converts them to <b>Apache Parquet</b> and normalizes them to <b>OCSF</b> (Open Cybersecurity Schema Framework).<br><b>Native sources:</b> CloudTrail management and data events (S3, Lambda), VPC Flow Logs, Route 53 Resolver query logs, Security Hub findings, EKS audit logs, WAFv2 logs &mdash; plus custom and third-party sources.<br><b>Multi-account:</b> the Organizations management account designates a <b>delegated administrator</b>; <b>rollup Regions</b> consolidate data from contributing Regions.<br><b>Subscribers:</b> <b>data access</b> (notified of new objects through an HTTPS endpoint or SQS) or <b>query access</b> (Lake Formation tables queried with Athena).<br>This stores the normalized logs; Security Hub aggregates <b>findings</b>."]
     ]
   },
   {
@@ -327,7 +330,8 @@ const CLUSTERS = [
       ["API Gateway Private API","Requires a <b>VPC interface endpoint</b>, and you must allow it in the API Gateway <b>resource policy</b> &mdash; <b>aws:SourceVpc</b> or <b>aws:SourceVpce</b>."],
       ["AWS AppSync","Managed <b>GraphQL</b> API. Single endpoint querying many data sources (DynamoDB, Aurora, Lambda, OpenSearch, HTTP). <b>Real-time subscriptions</b> over WebSocket, <b>offline sync</b> for mobile. Auth via API key, IAM, Cognito, or OIDC."],
       ["Route 53 CNAME vs Alias","<b>CNAME</b> &mdash; maps a name to any other hostname. Not valid at the zone apex, charged per query.<br><b>Alias</b> &mdash; points at an AWS resource. Works at the apex <em>and</em> subdomains, free queries, native health check. Alias is always type <b>A or AAAA</b>, never CNAME. Pair an A with an AAAA for dual-stack &mdash; that's the classic &ldquo;select TWO&rdquo; answer. <b>Never targets an EC2 instance.</b> Except for Alias, TTL is mandatory for each DNS record.<br><b>Both</b> CNAME and Alias track changing IPs, because both resolve to a name rather than a fixed address &mdash; only a <b>non-alias A record</b> breaks when IPs change."],
-      ["Route 53 Traffic Flow","Creates and maintains records in <b>complex configurations</b>. Used for <b>geoproximity bias</b> config. Saved as a <b>Traffic Flow Policy</b>."]
+      ["Route 53 Traffic Flow","Creates and maintains records in <b>complex configurations</b>. Used for <b>geoproximity bias</b> config. Saved as a <b>Traffic Flow Policy</b>."],
+      ["AWS Application Auto Scaling","Scaling for everything that is <b>not an EC2 Auto Scaling group</b>. You register a <b>scalable target</b> with a minimum and maximum capacity, then attach target tracking, step, scheduled or predictive scaling, depending on the resource.<br><b>Scales:</b> <b>ECS services</b> (task count), <b>DynamoDB</b> tables and GSIs (provisioned capacity), <b>Aurora replicas</b>, <b>Lambda provisioned concurrency</b>, SageMaker AI endpoint variants, ElastiCache replication groups, EMR clusters, Spot Fleet requests, Keyspaces tables, MSK broker storage, Neptune clusters, and custom resources.<br>&ldquo;DynamoDB auto scaling&rdquo; and &ldquo;ECS service auto scaling&rdquo; are this service underneath."]
     ]
   },
   {
@@ -364,6 +368,66 @@ const CLUSTERS = [
       ["DynamoDB indexes","You can only query by <b>partition key + sort key</b>, or by an <b>index</b>.<br><b>LSI</b> (Local Secondary Index) &mdash; keeps the <b>same partition key</b>, alternate sort key, defined at <b>creation time</b>.<br><b>GSI</b> (Global Secondary Index) &mdash; can change <b>both keys</b>, defined <b>after the table is created</b>."],
       ["Failover targets","<b>RDS Multi-AZ</b> &rarr; <b>standby replica</b> (not readable).<br><b>Aurora</b> &rarr; <b>Aurora replica</b> (readable).<br><b>DynamoDB</b> &rarr; none; uses <b>Global Tables</b> across Regions.<br><b>No snapshots</b> are used for failover for any of these databases."],
       ["Convert RDS to Aurora","Uses a <b>snapshot</b> or a <b>read replica</b>."]
+    ]
+  },
+  {
+    title:"Analytics",
+    key:"data",
+    axis:"",
+    col:"What it is",
+    rows:[
+      ["Amazon AppFlow","Managed, <b>no-code</b> transfer of data between <b>SaaS applications</b> (Salesforce, SAP, ServiceNow, Slack, Zendesk) and AWS services such as <b>S3</b> and <b>Redshift</b>.<br>Flows run <b>on demand</b>, <b>on a schedule</b> (full or incremental) or <b>on an event</b> from the SaaS application, and can map, filter and validate fields on the way.<br>Encrypted in transit and at rest; <b>PrivateLink</b> keeps the transfer off the public internet for SaaS applications that support it, such as Salesforce and Snowflake.<br>The tell is a <b>SaaS source</b> &mdash; DataSync moves files, DMS moves databases."],
+      ["AWS Clean Rooms","Lets you and partner companies <b>analyze your combined datasets without revealing the underlying data to each other</b>. Data is <b>read in place</b> &mdash; S3 through the Glue Data Catalog, Athena or Snowflake &mdash; not copied into a shared store.<br>You create a <b>collaboration</b>, invite other AWS accounts as members, and each member contributes <b>configured tables</b> protected by an <b>analysis rule</b>:<br><b>Aggregation</b> &mdash; only COUNT, SUM and AVG statistics come out.<br><b>List</b> &mdash; row-level output of the overlap between tables.<br><b>Custom</b> &mdash; queries approved in advance as analysis templates.<br>Extra controls: <b>differential privacy</b>, <b>cryptographic computing</b> (data stays encrypted while it is queried) and <b>ML lookalike modeling</b>.<br>Lake Formation grants a partner access to the tables themselves; this only lets them run restricted queries."]
+    ]
+  },
+  {
+    title:"Monitoring and Operations",
+    key:"ops",
+    axis:"",
+    col:"What it is",
+    rows:[
+      ["AWS Distro for OpenTelemetry (ADOT)","The <b>AWS-supported distribution of OpenTelemetry</b>, the open-source CNCF project for collecting metrics, logs and traces.<br><b>Instrument once</b>, then send correlated telemetry to one or more backends: <b>CloudWatch</b> (traces land in <b>X-Ray</b>), <b>Amazon Managed Service for Prometheus</b>, <b>OpenSearch Service</b>, or any <b>OTLP</b>-compliant third-party tool.<br><b>Auto-instrumentation</b> produces traces with no code change, and powers CloudWatch <b>Application Signals</b>.<br>Runs on <b>Lambda, EC2, ECS, EKS, Fargate and on premises</b>.<br>The tell is <b>open-source</b> or <b>vendor-neutral</b> instrumentation, or <b>more than one backend</b> &mdash; the X-Ray SDK sends only to X-Ray."],
+      ["Service Quotas","One place to <b>view quotas and request increases</b> across AWS services. Most quotas are <b>per account and per Region</b>, so an increase in one Region does not carry to another &mdash; raise the DR Region before you need it.<br><b>Quota request template</b> &mdash; needs Organizations with <b>all features</b> enabled; requests up to <b>10 quotas</b> automatically for every <b>new</b> account. <b>Existing accounts are not changed.</b><br><b>CloudWatch alarms</b> on quota utilization warn you before a limit is hit.<br><b>Automatic Management</b> monitors usage and notifies you, and in <b>Notify and Auto-Adjust</b> mode requests the increase for you."]
+    ]
+  },
+  {
+    title:"Cost Management",
+    key:"cost",
+    axis:"",
+    col:"What it is",
+    rows:[
+      ["AWS Cost and Usage Report (CUR)","The <b>most detailed billing data AWS offers</b> &mdash; line items by the <b>hour, day or month</b>, down to the <b>individual resource</b>, with your tags and cost categories as columns.<br>Delivered to an <b>S3 bucket you own</b> and refreshed up to <b>three times a day</b>; built to be queried with <b>Athena</b>, <b>Redshift</b> or <b>QuickSight</b>.<br>The recommended <b>2.0</b> version is created through <b>Data Exports</b>, where you choose columns and filter rows with SQL.<br>Cost Explorer is the ready-made charts; this is the raw data behind a custom chargeback report."],
+      ["AWS Cost Categories","<b>Rules that group costs into your own business categories</b> &mdash; team, project, cost center &mdash; without touching the resources.<br>Rules match on <b>account, tag, service, charge type, Region, usage type</b> or another category (for hierarchies). They are evaluated <b>top down</b>, and unmatched costs fall into a <b>default value</b>. An <b>inherited value</b> rule takes the category straight from an account name or a tag value.<br>Created only in the <b>management account</b> (or a standalone account). Applies from the <b>start of the current month</b>, or retroactively from an earlier month you pick.<br>Appears in <b>Cost Explorer, Budgets, the Cost and Usage Report and Cost Anomaly Detection</b>.<br><b>Split charge rules</b> spread shared costs across category values &mdash; proportional, fixed percentage or even split &mdash; but the result shows only on the category's details page, <b>not in the Cost and Usage Report or Cost Explorer</b>."]
+    ]
+  },
+  {
+    title:"Migration",
+    key:"migrate",
+    axis:"",
+    col:"What it is",
+    rows:[
+      ["AWS Transform","An <b>agentic AI</b> service that plans and carries out large migrations and modernizations, with people approving the critical steps (<b>human in the loop</b>).<br><b>Mainframe</b> &mdash; analyzes IBM z/OS code (COBOL, PL/I, JCL), documents it, extracts the business logic, decomposes it and refactors <b>COBOL to Java</b>.<br><b>.NET</b> &mdash; ports <b>.NET Framework</b> applications to <b>cross-platform .NET on Linux</b>.<br><b>VMware, Hyper-V and bare metal</b> &mdash; discovery, dependency and wave planning, network translation to VPC, then server rehost to EC2.<br><b>Custom</b> &mdash; language and framework upgrades that cut technical debt.<br><b>No additional charge</b> for the service itself.<br>A plain lift-and-shift of servers on its own is <b>MGN</b>, the renamed Application Migration Service."]
+    ]
+  },
+  {
+    title:"Resilience and Disaster Recovery",
+    key:"dr",
+    axis:"",
+    col:"What it is",
+    rows:[
+      ["AWS Elastic Disaster Recovery (DRS)","<b>Continuous block-level replication</b> of servers &mdash; on premises, in another cloud, or EC2 in another Region or AZ &mdash; through the <b>AWS Replication Agent</b> on each source server, into a low-cost <b>staging area subnet</b> (cheap storage, minimal compute).<br><b>RPO of seconds, RTO of minutes.</b> Recovery instances are launched only for a drill or a real recovery, from the latest state or an earlier <b>point in time</b> &mdash; the answer for going back to a moment <b>before ransomware</b>.<br><b>Drills are non-disruptive</b>; replication keeps running.<br>It launches the instances, but <b>redirecting traffic is yours to do</b>, typically with Route 53. <b>Failback</b> replicates the data back to the source servers with the Failback Client.<br>AWS Transform MGN replicates the same way for a <b>one-time migration</b>; this keeps replicating as standing protection."],
+      ["AWS Resilience Hub","Assesses whether an application <b>can meet its RTO and RPO targets</b>. It measures and recommends; it does not replicate or fail over anything itself.<br>Describe the application by importing <b>CloudFormation stacks, Terraform state files, Resource Groups or EKS clusters</b>, then attach a <b>resiliency policy</b> with RTO and RPO targets for four disruption types: <b>application, infrastructure, Availability Zone and Region</b>.<br>The assessment returns <b>policy met</b> or <b>policy breached</b>, a <b>resiliency score</b>, and recommendations that come with ready-made <b>CloudWatch alarms, standard operating procedures (SOPs) and FIS experiments</b>.<br><b>Drift detection</b> flags a later change that breaks the policy, and assessments can run from a CI/CD pipeline."],
+      ["AWS Fault Injection Service (FIS)","Managed <b>chaos engineering</b>: runs controlled fault-injection experiments on real AWS resources to prove a workload survives failure.<br>An <b>experiment template</b> holds three things:<br><b>Actions</b> &mdash; the faults, run in sequence or in parallel (stop instances, fail over a database, disrupt network connectivity, stress CPU through SSM).<br><b>Targets</b> &mdash; the resources, chosen by ARN, tag or filter.<br><b>Stop conditions</b> &mdash; <b>CloudWatch alarms</b> that halt the experiment automatically.<br>The <b>scenario library</b> has ready-made tests such as <b>AZ Availability: Power Interruption</b> and <b>Cross-Region: Connectivity</b>.<br>A <b>safety lever</b> stops every running experiment in the account and Region; <b>multi-account</b> experiments run from an orchestrator account."]
+    ]
+  },
+  {
+    title:"Networking",
+    key:"net",
+    axis:"",
+    col:"What it is",
+    rows:[
+      ["Amazon VPC Lattice","<b>Application-layer</b> networking that connects, secures and monitors <b>service-to-service</b> traffic across VPCs and accounts, with no peering, Transit Gateway or sidecar proxies to manage. <b>Overlapping CIDRs are fine</b> &mdash; it translates addresses.<br><b>Service network</b> &mdash; the logical boundary; services and VPCs associated with it can talk, if authorized.<br><b>Service</b> &mdash; listeners, rules and target groups; targets can be EC2 instances, IP addresses, Lambda functions, ALBs, ECS tasks or Kubernetes pods.<br><b>Auth policy</b> &mdash; an IAM policy document on the service network or on a service.<br>A VPC associates with only <b>one service network</b> (more through service-network VPC endpoints); a service can join many. Shared across accounts with <b>AWS RAM</b>. <b>Regional</b> &mdash; cross-Region still needs Transit Gateway, peering or Cloud WAN.<br>PrivateLink exposes one service in one direction; this is many-to-many with IAM authorization."],
+      ["AWS Cloud WAN","A managed <b>global network</b> connecting VPCs, data centers and branch offices across Regions from one dashboard, driven by a single <b>core network policy</b> (a versioned JSON document).<br><b>Core network edge</b> &mdash; the AWS-managed connection point in each Region, much like a Transit Gateway. Edges <b>peer with each other in a full mesh automatically</b>.<br><b>Segments</b> &mdash; isolated routing domains that span Regions, such as production and development.<br><b>Attachments</b> &mdash; VPC, Site-to-Site VPN, Connect (SD-WAN), Direct Connect gateway and Transit Gateway route table. <b>Attachment policies</b> map them to segments by <b>tag</b>.<br><b>Service insertion</b> steers traffic through firewalls placed in a network function group.<br>Transit Gateway is <b>Regional</b> &mdash; you build the inter-Region peering and static routes yourself. This is the answer for <b>many Regions under one policy</b>."]
     ]
   }
 ];
