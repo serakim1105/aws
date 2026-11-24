@@ -135,6 +135,26 @@
   .parts a:focus-visible{outline:2px solid var(--focus);outline-offset:2px;}
   .parts a span{color:var(--faint);}
 
+  /* day picker — seven study days, each a view of this one deck */
+  .days{display:flex;flex-wrap:wrap;gap:.4rem;margin:1rem 0 0;}
+  .day{
+    font-family:var(--fs-mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:2px;
+    padding:.42rem .62rem;cursor:pointer;
+  }
+  .day:hover{color:var(--ink);}
+  .day:focus-visible{outline:2px solid var(--focus);outline-offset:1px;}
+  .day[aria-pressed="true"]{color:var(--chip-ink);background:var(--accent);border-color:var(--accent);}
+  .day-info{margin:.7rem 0 0;font-size:.85rem;color:var(--muted);max-width:75ch;}
+  .day-info b{color:var(--ink);font-weight:600;}
+  .speed{
+    font-family:var(--fs-mono);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--accent);background:none;border:0;border-bottom:1px solid currentColor;
+    padding:0 0 .1rem;margin-left:.6rem;cursor:pointer;
+  }
+  .speed:focus-visible{outline:2px solid var(--focus);outline-offset:2px;}
+  .day-info .unassigned{display:block;margin-top:.3rem;color:var(--accent);}
+
   .stack{display:flex;flex-direction:column;gap:1.75rem;margin-top:1.9rem;}
 
   /* part heading — one per former deck */
@@ -231,6 +251,9 @@
     #q{width:100%;max-width:none;}
     .toggle{flex:1 1 auto;justify-content:center;padding:.65rem .7rem;}
 
+    .day{padding:.5rem .55rem;}
+    .speed{display:inline-block;margin:.45rem 0 0;}
+
     .stack{gap:1.15rem;margin-top:1.4rem;}
     .part{margin-top:.5rem;padding-top:1.05rem;}
     .part h2{font-size:1.4rem;}
@@ -283,7 +306,7 @@
   <header class="mast">
     <div class="brand">
       <h1>AWS Professional Cards</h1>
-      <p><span id="count">0</span> sections &middot; SAP-C03</p>
+      <p><span id="view"></span><span id="count">0</span> sections &middot; SAP-C03</p>
     </div>
     <div class="controls">
       <label class="field">
@@ -296,6 +319,9 @@
   </header>
 
   <p class="hint" id="hint">One deck for SAP-C03: professional notes, contrast sets, quick recall and lookup tables. Turn on <b>Blank mode</b> to hide the names and work backward from the behavior.</p>
+
+  <div class="days" id="days" role="group" aria-label="Study days"></div>
+  <p class="day-info" id="day-info" hidden></p>
 
   <nav class="parts" id="parts" aria-label="Parts of this deck"></nav>
 
@@ -322,10 +348,24 @@ const PARTS = [
   { id:"lookup",   title:"Lookup tables",      note:"Where each managed log can be delivered, and which storage services survive an AZ or Region. Here <b>Blank mode</b> hides the answers, not the names. Logs: S3 for retention, CloudWatch Logs for alarms, Firehose for streaming." }
 ];
 
+/* Seven study days. Every section names its day with `day`, and a day shows every section that names it,
+   so a row added to or edited in this master deck appears in its day automatically. A new section needs a
+   `day` too: without one it is shown on every day and listed as unassigned, so nothing goes missing. */
+const DAYS = [
+  { n:1, short:"Identity",    title:"Identity, accounts and governance" },
+  { n:2, short:"Security",    title:"Security services and data protection" },
+  { n:3, short:"Networking",  title:"Networking and content delivery" },
+  { n:4, short:"Compute",     title:"Compute, containers and integration" },
+  { n:5, short:"Storage",     title:"Storage, databases and caching" },
+  { n:6, short:"Ops & cost",  title:"Monitoring, operations and cost" },
+  { n:7, short:"Data & DR",   title:"Data, AI, migration and resilience" }
+];
+
 const CLUSTERS = [
   /* ---- Professional notes ---- */
   {
     title:"Identity and Federation",
+    day:1,
     key:"org",
     axis:"",
     col:"What it is",
@@ -347,6 +387,7 @@ const CLUSTERS = [
   },
   {
     title:"Organizations",
+    day:1,
     key:"govern",
     axis:"",
     col:"What it is",
@@ -360,6 +401,7 @@ const CLUSTERS = [
   },
   {
     title:"Security",
+    day:2,
     key:"security",
     axis:"",
     col:"What it is",
@@ -403,6 +445,7 @@ const CLUSTERS = [
   },
   {
     title:"Compute and Load Balancing",
+    day:4,
     key:"compute",
     axis:"",
     col:"What it is",
@@ -432,6 +475,7 @@ const CLUSTERS = [
   },
   {
     title:"Storage",
+    day:5,
     key:"storage",
     axis:"",
     col:"What it is",
@@ -448,6 +492,7 @@ const CLUSTERS = [
   },
   {
     title:"Caching",
+    day:5,
     key:"cache",
     axis:"",
     col:"What it is",
@@ -458,6 +503,7 @@ const CLUSTERS = [
   },
   {
     title:"Databases",
+    day:5,
     key:"data",
     axis:"",
     col:"What it is",
@@ -469,6 +515,7 @@ const CLUSTERS = [
   },
   {
     title:"Analytics",
+    day:7,
     key:"data",
     axis:"",
     col:"What it is",
@@ -479,6 +526,7 @@ const CLUSTERS = [
   },
   {
     title:"Monitoring and Operations",
+    day:6,
     key:"ops",
     axis:"",
     col:"What it is",
@@ -491,6 +539,7 @@ const CLUSTERS = [
   },
   {
     title:"Cost Management",
+    day:6,
     key:"cost",
     axis:"",
     col:"What it is",
@@ -501,6 +550,7 @@ const CLUSTERS = [
   },
   {
     title:"Migration",
+    day:7,
     key:"migrate",
     axis:"",
     col:"What it is",
@@ -510,6 +560,7 @@ const CLUSTERS = [
   },
   {
     title:"Resilience and Disaster Recovery",
+    day:7,
     key:"dr",
     axis:"",
     col:"What it is",
@@ -521,6 +572,7 @@ const CLUSTERS = [
   },
   {
     title:"Networking",
+    day:3,
     key:"net",
     axis:"",
     col:"What it is",
@@ -535,6 +587,7 @@ const CLUSTERS = [
   {
     part:"contrast",
     title:"Security detection",
+    day:2,
     key:"security",
     axis:"What does it look at?",
     col:["Inspects","Exam trigger"],
@@ -550,6 +603,7 @@ const CLUSTERS = [
   {
     part:"contrast",
     title:"Storage",
+    day:5,
     key:"storage",
     axis:"How is it accessed &mdash; and by how many things at once?",
     col:["Type & protocol","Exam trigger"],
@@ -567,6 +621,7 @@ const CLUSTERS = [
   {
     part:"contrast",
     title:"Messaging &amp; streaming",
+    day:4,
     key:"messaging",
     axis:"Who receives it, and can it be replayed?",
     col:["Delivery model","Exam trigger"],
@@ -581,6 +636,7 @@ const CLUSTERS = [
   {
     part:"contrast",
     title:"Load balancing &amp; traffic",
+    day:3,
     key:"lb",
     axis:"Which layer does it operate at? &mdash; ALB = content, NLB = speed and static IP, GWLB = appliance insertion",
     col:["Layer","Exam trigger"],
@@ -597,6 +653,7 @@ const CLUSTERS = [
   {
     part:"contrast",
     title:"Hybrid connectivity",
+    day:3,
     key:"hybrid",
     axis:"Private, encrypted, or built to scale?",
     col:["What it gives you","Exam trigger"],
@@ -614,6 +671,7 @@ const CLUSTERS = [
   {
     part:"contrast",
     title:"Governance &amp; audit",
+    day:1,
     key:"govern",
     axis:"Does it prevent, detect, or set things up?",
     col:["Role","Exam trigger"],
@@ -631,6 +689,7 @@ const CLUSTERS = [
   {
     part:"contrast",
     title:"Deep monitoring by service",
+    day:6,
     key:"govern",
     axis:"Default metrics never show you inside &mdash; what do you turn on, per service, and is it a checkbox or an agent you install?",
     col:["What you enable","Exam trigger"],
@@ -647,6 +706,7 @@ const CLUSTERS = [
   {
     part:"contrast",
     title:"RDS monitoring",
+    day:6,
     key:"govern",
     axis:"Where is the metric measured from &mdash; outside the instance, inside the OS, or inside the database engine? &mdash; and note the EC2 trap doesn't apply here: RDS gives you memory by default",
     col:["Vantage point / granularity","Exam trigger"],
@@ -660,6 +720,7 @@ const CLUSTERS = [
   {
     part:"contrast",
     title:"Caching &amp; acceleration",
+    day:3,
     key:"cache",
     axis:"What is cached, and where does it sit?",
     col:["Caches what, where","Exam trigger"],
@@ -675,6 +736,7 @@ const CLUSTERS = [
   {
     part:"contrast",
     title:"CloudFront access control",
+    day:2,
     key:"cache",
     axis:"How many objects does one grant cover, and does the client support cookies?",
     col:["Scope / mechanism","Exam trigger"],
@@ -687,6 +749,7 @@ const CLUSTERS = [
   {
     part:"contrast",
     title:"S3 data protection",
+    day:2,
     key:"storage",
     axis:"How permanent is it &mdash; and who is allowed to undo it?",
     col:["What it does","Exam trigger"],
@@ -703,6 +766,7 @@ const CLUSTERS = [
   {
     part:"contrast",
     title:"EC2 purchasing options",
+    day:6,
     key:"lb",
     axis:"How interruptible is it, and how long is the commitment? &mdash; and watch the trap: “reserve capacity in a specific AZ” means a Zonal RI or an On-Demand Capacity Reservation, never a Regional RI and never plain On-Demand",
     col:["Commitment / interruption","Exam trigger"],
@@ -719,6 +783,7 @@ const CLUSTERS = [
   {
     part:"contrast",
     title:"Auto Scaling policies",
+    day:4,
     key:"govern",
     axis:"Does it react, aim for a number, or run on a clock?",
     col:["How it decides","Exam trigger"],
@@ -733,6 +798,7 @@ const CLUSTERS = [
   {
     part:"contrast",
     title:"Fronting an API",
+    day:3,
     key:"messaging",
     axis:"What shape is the client contract &mdash; REST, GraphQL, WebSocket, or plain HTTP to a server?",
     col:["What it exposes","Exam trigger"],
@@ -748,6 +814,7 @@ const CLUSTERS = [
   {
     part:"contrast",
     title:"EKS / Kubernetes autoscaling",
+    day:4,
     key:"k8s",
     axis:"Which layer is being scaled &mdash; the pods inside the cluster, or the nodes underneath them?",
     col:["Layer / what it changes","Exam trigger"],
@@ -764,6 +831,7 @@ const CLUSTERS = [
   {
     part:"contrast",
     title:"S3 storage class durations",
+    day:5,
     key:"storage",
     axis:"Minimum storage duration and retrieval time &mdash; the two numbers that decide the answer",
     col:["Min duration / retrieval","Exam trigger"],
@@ -780,6 +848,7 @@ const CLUSTERS = [
   {
     part:"contrast",
     title:"Analytics",
+    day:7,
     key:"messaging",
     axis:"What shape is the data, and what are you doing to it?",
     col:["Role in the pipeline","Exam trigger"],
@@ -798,6 +867,7 @@ const CLUSTERS = [
   {
     part:"contrast",
     title:"Encryption &amp; key management",
+    day:2,
     key:"security",
     axis:"Who holds the key, and who performs the encryption?",
     col:["Key owner / where it happens","Exam trigger"],
@@ -815,6 +885,7 @@ const CLUSTERS = [
   {
     part:"contrast",
     title:"Route 53 record types",
+    day:3,
     key:"hybrid",
     axis:"Alias or not &mdash; and remember an Alias is only ever type A or AAAA, never CNAME",
     col:["What it is","Exam trigger"],
@@ -830,6 +901,7 @@ const CLUSTERS = [
   {
     part:"contrast",
     title:"Language &amp; speech AI",
+    day:7,
     key:"govern",
     axis:"What goes in, what comes out &mdash; and does it hold a conversation or just analyze?",
     col:["In &rarr; out","Exam trigger"],
@@ -846,6 +918,7 @@ const CLUSTERS = [
   {
     part:"contrast",
     title:"VPC internet access",
+    day:3,
     key:"hybrid",
     axis:"Which direction, and which IP version?",
     col:["Direction / version","Exam trigger"],
@@ -859,6 +932,7 @@ const CLUSTERS = [
   {
     part:"contrast",
     title:"EBS volume types",
+    day:5,
     key:"storage",
     axis:"SSD or HDD &mdash; and are you paying for IOPS or for throughput?",
     col:["Media / what you pay for","Exam trigger"],
@@ -873,6 +947,7 @@ const CLUSTERS = [
   {
     part:"contrast",
     title:"Firewalls &amp; traffic filtering",
+    day:2,
     key:"security",
     axis:"Which layer, which scope &mdash; and does it remember the connection?",
     col:["Where it sits","Exam trigger"],
@@ -888,6 +963,7 @@ const CLUSTERS = [
   {
     part:"contrast",
     title:"Identity &amp; federation",
+    day:1,
     key:"security",
     axis:"Whose identities &mdash; employees, customers, or an existing directory?",
     col:["Who it's for","Exam trigger"],
@@ -905,6 +981,7 @@ const CLUSTERS = [
   {
     part:"contrast",
     title:"Moving data into AWS",
+    day:7,
     key:"hybrid",
     axis:"One-time bulk, ongoing sync, or a live hybrid mount &mdash; and is the network big enough?",
     col:["Motion pattern","Exam trigger"],
@@ -927,6 +1004,7 @@ const CLUSTERS = [
   {
     part:"quick",
     title:"Compute",
+    day:4,
     key:"compute",
     axis:"",
     col:"What it is",
@@ -946,6 +1024,7 @@ const CLUSTERS = [
   {
     part:"quick",
     title:"Containers",
+    day:4,
     key:"container",
     axis:"",
     col:"What it is",
@@ -960,6 +1039,7 @@ const CLUSTERS = [
   {
     part:"quick",
     title:"Storage",
+    day:5,
     key:"storage",
     axis:"",
     col:"What it is",
@@ -986,6 +1066,7 @@ const CLUSTERS = [
   {
     part:"quick",
     title:"Database",
+    day:5,
     key:"database",
     axis:"",
     col:"What it is",
@@ -1013,6 +1094,7 @@ const CLUSTERS = [
   {
     part:"quick",
     title:"Networking &amp; Delivery",
+    day:3,
     key:"network",
     axis:"",
     col:"What it is",
@@ -1046,6 +1128,7 @@ const CLUSTERS = [
   {
     part:"quick",
     title:"Security &amp; Identity",
+    day:2,
     key:"security",
     axis:"",
     col:"What it is",
@@ -1076,6 +1159,7 @@ const CLUSTERS = [
   {
     part:"quick",
     title:"Management &amp; Governance",
+    day:1,
     key:"govern",
     axis:"",
     col:"What it is",
@@ -1107,6 +1191,7 @@ const CLUSTERS = [
   {
     part:"quick",
     title:"Application Integration",
+    day:4,
     key:"integrate",
     axis:"",
     col:"What it is",
@@ -1124,6 +1209,7 @@ const CLUSTERS = [
   {
     part:"quick",
     title:"Analytics",
+    day:7,
     key:"analytics",
     axis:"",
     col:"What it is",
@@ -1144,6 +1230,7 @@ const CLUSTERS = [
   {
     part:"quick",
     title:"Migration &amp; Transfer",
+    day:7,
     key:"migrate",
     axis:"",
     col:"What it is",
@@ -1162,6 +1249,7 @@ const CLUSTERS = [
   {
     part:"quick",
     title:"Developer Tools",
+    day:4,
     key:"devtools",
     axis:"",
     col:"What it is",
@@ -1178,6 +1266,7 @@ const CLUSTERS = [
   {
     part:"quick",
     title:"Edge &amp; End User",
+    day:3,
     key:"edge",
     axis:"",
     col:"What it is",
@@ -1195,6 +1284,7 @@ const CLUSTERS = [
   {
     part:"quick",
     title:"Machine Learning",
+    day:7,
     key:"ml",
     axis:"",
     col:"What it is",
@@ -1217,6 +1307,7 @@ const CLUSTERS = [
   {
     part:"lookup",
     title:"Network &amp; delivery",
+    day:3,
     key:"net",
     axis:"",
     col:"Destination",
@@ -1236,6 +1327,7 @@ const CLUSTERS = [
   {
     part:"lookup",
     title:"Security &amp; audit",
+    day:1,
     key:"sec",
     axis:"",
     col:"Destination",
@@ -1250,6 +1342,7 @@ const CLUSTERS = [
   {
     part:"lookup",
     title:"Application &amp; data",
+    day:6,
     key:"app",
     axis:"",
     col:"Destination",
@@ -1266,6 +1359,7 @@ const CLUSTERS = [
   {
     part:"lookup",
     title:"Multi-AZ and multi-Region",
+    day:5,
     key:"sec",
     axis:"",
     col:["Multi-AZ","Multi-Region"],
@@ -1299,7 +1393,7 @@ PARTS.forEach(p => {
   ph.id = `part-${p.id}`;
   ph.innerHTML = `<h2>${p.title}</h2><p>${p.note}</p>`;
   stack.append(ph);
-  nav.insertAdjacentHTML('beforeend', `<a href="#part-${p.id}">${p.title} <span>${list.length}</span></a>`);
+  nav.insertAdjacentHTML('beforeend', `<a href="#part-${p.id}" data-part="${p.id}">${p.title} <span>${list.length}</span></a>`);
 
   /* sections are numbered within their part */
   list.forEach((c, i) => {
@@ -1307,6 +1401,7 @@ PARTS.forEach(p => {
     const sec = document.createElement('section');
     sec.className = answers ? 'cl lookup' : 'cl';
     sec.dataset.part = p.id;
+    sec.dataset.day = DAYS.some(d => d.n === c.day) ? String(c.day) : '';
     sec.style.setProperty('--hue', `var(--c-${c.key})`);
 
     const head = document.createElement('div');
@@ -1344,8 +1439,6 @@ PARTS.forEach(p => {
   });
 });
 
-document.getElementById('count').textContent = CLUSTERS.length;
-
 /* blank mode: click a hidden name (or, in a lookup table, a hidden answer) to reveal it */
 const HIDDEN = '.cl:not(.lookup) td.svc b, td.dest span';
 function reveal(el){
@@ -1364,27 +1457,13 @@ stack.addEventListener('keydown', e => {
   }
 });
 
-/* filter — hides rows that don't match, then any section or part left with nothing to show */
+/* filter — searches the rows of the day or days being shown; applyView (below) does the hiding */
 const q = document.getElementById('q');
 const allRows = Array.from(stack.querySelectorAll('tbody tr'));
 allRows.forEach(tr => {
   tr.dataset.k = Array.from(tr.cells, td => td.textContent).join(' ').toLowerCase();
 });
-q.addEventListener('input', () => {
-  const term = q.value.trim().toLowerCase();
-  allRows.forEach(tr => { tr.hidden = !!term && !tr.dataset.k.includes(term); });
-  let any = false;
-  stack.querySelectorAll('section.cl').forEach(sec => {
-    const shown = sec.querySelector('tbody tr:not([hidden])') !== null;
-    sec.hidden = !shown;
-    if (shown) any = true;
-  });
-  stack.querySelectorAll('.part').forEach(ph => {
-    const id = ph.id.replace('part-', '');
-    ph.hidden = !stack.querySelector(`section.cl[data-part="${id}"]:not([hidden])`);
-  });
-  document.body.classList.toggle('empty', !any);
-});
+q.addEventListener('input', () => applyView());
 
 /* shuffle — within each cluster's table; toggling off restores the original order */
 const shuf = document.getElementById('shuffle');
@@ -1415,6 +1494,100 @@ btn.addEventListener('click', () => {
     ? 'Names hidden. Read across the row and name it before you click &mdash; at professional level the row you can describe but not name is the one that will cost you. In the lookup tables it is the answers that are hidden.'
     : 'One deck for SAP-C03: professional notes, contrast sets, quick recall and lookup tables. Turn on <b>Blank mode</b> to hide the names and work backward from the behavior.';
 });
+
+/* day picker — a view over this master deck, never a copy. Each section shows on the day it names, so any change
+   to the deck shows up in its day automatically. The choice is kept in the address (?day=3, or ?day=1-3 for a
+   speedrun), so a day can be bookmarked and reopened offline. */
+const DAY_NUMS = DAYS.map(d => d.n);
+const dayBox = document.getElementById('days');
+const dayInfo = document.getElementById('day-info');
+const viewLabel = document.getElementById('view');
+const countEl = document.getElementById('count');
+const sections = Array.from(stack.querySelectorAll('section.cl'));
+const unassigned = sections.filter(sec => !sec.dataset.day);
+let picked = null;   // null means all days; otherwise a set of day numbers
+
+function parseDays(value) {
+  const m = /^(\d+)(?:-(\d+))?$/.exec((value || '').trim());
+  if (!m) return null;
+  const from = +m[1], to = m[2] ? +m[2] : from;
+  if (to < from || !DAY_NUMS.includes(from) || !DAY_NUMS.includes(to)) return null;
+  return new Set(DAY_NUMS.filter(n => n >= from && n <= to));
+}
+const span = set => { const ns = [...set].sort((a, b) => a - b); return [ns[0], ns[ns.length - 1]]; };
+
+function applyView() {
+  const term = q.value.trim().toLowerCase();
+  allRows.forEach(tr => { tr.hidden = !!term && !tr.dataset.k.includes(term); });
+  let inView = 0, cards = 0, shown = 0;
+  const perPart = {};
+  sections.forEach(sec => {
+    const inDay = !picked || !sec.dataset.day || picked.has(+sec.dataset.day);
+    const hasRows = sec.querySelector('tbody tr:not([hidden])') !== null;
+    sec.hidden = !(inDay && hasRows);
+    if (inDay) { inView++; cards += sec.querySelectorAll('tbody tr').length; perPart[sec.dataset.part] = (perPart[sec.dataset.part] || 0) + 1; }
+    if (!sec.hidden) shown++;
+  });
+  stack.querySelectorAll('.part').forEach(ph => {
+    const id = ph.id.replace('part-', '');
+    ph.hidden = !stack.querySelector(`section.cl[data-part="${id}"]:not([hidden])`);
+    const link = nav.querySelector(`a[data-part="${id}"]`);
+    link.hidden = !perPart[id];
+    link.querySelector('span').textContent = perPart[id] || 0;
+  });
+  document.body.classList.toggle('empty', shown === 0);
+  countEl.textContent = inView;
+
+  dayBox.querySelectorAll('.day').forEach(b => {
+    const on = b.dataset.day === 'all' ? !picked : !!picked && picked.has(+b.dataset.day);
+    b.setAttribute('aria-pressed', String(on));
+  });
+  if (!picked) { viewLabel.textContent = ''; dayInfo.hidden = true; dayInfo.innerHTML = ''; return; }
+  const [from, to] = span(picked);
+  const label = from === to ? `Day ${from}` : `Days ${from}–${to}`;
+  viewLabel.textContent = label + ' · ';
+  let html = from === to
+    ? `<b>${label}</b> &middot; ${DAYS.find(d => d.n === from).title} &middot; ${cards} cards`
+    : `<b>${label}</b> &middot; ${cards} cards`;
+  if (from === to && from > DAY_NUMS[0]) {
+    const before = from - 1 === DAY_NUMS[0] ? `day ${DAY_NUMS[0]}` : `days ${DAY_NUMS[0]}–${from - 1}`;
+    html += `<button class="speed" type="button" data-before="${from}">Speedrun ${before}</button>`;
+  }
+  if (unassigned.length) {
+    html += `<span class="unassigned">Not in a day yet, so shown on every day: ${unassigned.map(sec => sec.querySelector('h2').textContent).join(', ')}</span>`;
+  }
+  dayInfo.innerHTML = html;
+  dayInfo.hidden = false;
+}
+
+function setView(set) {
+  picked = set;
+  document.querySelectorAll('td.svc b.on, td.dest span.on, tr.on').forEach(el => el.classList.remove('on'));
+  const url = new URL(location.href);
+  if (picked) { const [from, to] = span(picked); url.searchParams.set('day', from === to ? String(from) : `${from}-${to}`); }
+  else url.searchParams.delete('day');
+  url.hash = '';
+  try { history.replaceState(null, '', url); } catch (error) { /* some browsers refuse this for files opened from disk; the view still changes */ }
+  applyView();
+  window.scrollTo(0, 0);
+}
+
+dayBox.innerHTML = `<button class="day" type="button" data-day="all" aria-pressed="true">All days</button>`
+  + DAYS.map(d => `<button class="day" type="button" data-day="${d.n}" title="${d.title}" aria-pressed="false">${d.n} ${d.short}</button>`).join('');
+dayBox.addEventListener('click', e => {
+  const b = e.target.closest('button.day');
+  if (b) setView(b.dataset.day === 'all' ? null : new Set([+b.dataset.day]));
+});
+/* speedrun: every earlier day, in blank mode */
+dayInfo.addEventListener('click', e => {
+  const b = e.target.closest('button.speed');
+  if (!b) return;
+  setView(new Set(DAY_NUMS.filter(n => n < +b.dataset.before)));
+  if (!document.body.classList.contains('blank')) btn.click();
+});
+
+picked = parseDays(new URLSearchParams(location.search).get('day'));
+applyView();
 
 /* offline copy — sw.js saves this page and its fonts, so the deck still opens and reloads with no connection.
    The page also tells the worker what it has already loaded, which is what gets the very first visit saved.
