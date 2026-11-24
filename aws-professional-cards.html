@@ -441,7 +441,8 @@ const CLUSTERS = [
       ["Storage Lens metric categories","<b>Summary</b> &mdash; StorageBytes, ObjectCount. Find the fastest-growing or unused buckets and prefixes.<br><b>Cost-Optimization</b> &mdash; NonCurrentVersionStorageBytes, IncompleteMultipartUploadStorageBytes. Find incomplete multipart uploads older than 7 days, or objects to move to a cheaper class.<br><b>Data-Protection</b> &mdash; VersioningEnabledBucketCount, MFADeleteEnabledBucketCount, SSEKMSEnabledBucketCount, CrossRegionReplicationRuleCount. Find buckets not following best practice.<br><b>Access-management</b> &mdash; ObjectOwnershipBucketOwnerEnforcedBucketCount. Which Object Ownership setting each bucket uses.<br><b>Event</b> &mdash; EventNotificationEnabledBucketCount.<br><b>Performance</b> &mdash; TransferAccelerationEnabledBucketCount.<br><b>Activity</b> &mdash; AllRequests, GetRequests, PutRequests, ListRequests, BytesDownloaded.<br><b>Detailed Status Code</b> &mdash; 200OKStatusCount, 403ForbiddenErrorCount, 404NotFoundErrorCount."],
       ["Storage Lens free vs paid","<b>Free</b> &mdash; automatic for all customers, around <b>28 usage metrics</b>, queryable for <b>14 days</b>.<br><b>Advanced Metrics and Recommendations</b> (paid) &mdash; Activity, Advanced Cost Optimization, Advanced Data Protection and Status Code metrics; <b>CloudWatch publishing</b> at no additional charge; <b>prefix-level aggregation</b>; queryable for <b>15 months</b>."],
       ["FSx replication / migration","<b>SnapMirror</b> means <b>ONTAP</b>.<br><b>Lustre</b> has <b>no multi-AZ</b> and leans on <b>S3</b> instead.<br><b>Windows</b> has no native replication, so <b>DataSync or Backup</b>.<br><b>Cannot change an existing file system</b> &mdash; all FSx types have to create a new file system and move data into it to <b>decrease volume size</b> or to replicate. Increasing is fine."],
-      ["AWS DataSync","Moves large amounts of data.<br>On-premises or another cloud to AWS (NFS, SMB, HDFS, S3 API) &mdash; <b>needs an agent</b>.<br>AWS to AWS between storage services &mdash; <b>no agent</b>.<br>Synchronizes to <b>S3</b> (any storage class, including Glacier), <b>EFS</b>, and <b>FSx</b> (Windows, Lustre, NetApp, OpenZFS).<br>Replication tasks scheduled <b>hourly, daily or weekly</b>.<br><b>File permissions and metadata are preserved</b> (NFS POSIX, SMB).<br>One agent task can use <b>10 Gbps</b>, and you can set a bandwidth limit."]
+      ["AWS DataSync","Moves large amounts of data.<br>On-premises or another cloud to AWS (NFS, SMB, HDFS, S3 API) &mdash; <b>needs an agent</b>.<br>AWS to AWS between storage services &mdash; <b>no agent</b>.<br>Synchronizes to <b>S3</b> (any storage class, including Glacier), <b>EFS</b>, and <b>FSx</b> (Windows, Lustre, NetApp, OpenZFS).<br>Replication tasks scheduled <b>hourly, daily or weekly</b>.<br><b>File permissions and metadata are preserved</b> (NFS POSIX, SMB).<br>One agent task can use <b>10 Gbps</b>, and you can set a bandwidth limit."],
+      ["AWS Data Exchange","Marketplace for subscribing to <b>third-party datasets</b>, delivered to <b>S3, Redshift, or APIs</b>."]
     ]
   },
   {
@@ -824,6 +825,22 @@ const CLUSTERS = [
   },
   {
     part:"contrast",
+    title:"Language &amp; speech AI",
+    key:"govern",
+    axis:"What goes in, what comes out &mdash; and does it hold a conversation or just analyze?",
+    col:["In &rarr; out","Exam trigger"],
+    rows:[
+      ["Lex","Text or voice &rarr; a conversation with intents and actions","<em>Chatbot, chat box, “understand user intent and fulfill requests”</em> &mdash; Lambda code hooks do the actions; the engine behind Alexa"],
+      ["Comprehend","Text &rarr; sentiment, entities, key phrases, language","<em>Analyze reviews, extract PII or topics from documents</em> &mdash; it reads, it doesn't reply; the trap next to Lex"],
+      ["Polly","Text &rarr; speech audio","<em>Read this out loud, voice for an IVR</em> &mdash; the output side of a voice bot; SSML controls how it's spoken"],
+      ["Transcribe","Speech audio &rarr; text","<em>Call transcripts, subtitles, meeting notes</em> &mdash; the input side of a voice bot"],
+      ["Translate","Text &rarr; text in another language","<em>Localize content</em>"],
+      ["Textract","Scanned documents &rarr; text, forms, tables","<em>Pull fields out of PDFs and images</em> &mdash; OCR that understands layout"],
+      ["Kendra","Question &rarr; answer from your documents","<em>Enterprise search in natural language</em> &mdash; retrieval, not a bot; often paired with Lex for the chat layer"]
+    ]
+  },
+  {
+    part:"contrast",
     title:"VPC internet access",
     key:"hybrid",
     axis:"Which direction, and which IP version?",
@@ -915,9 +932,11 @@ const CLUSTERS = [
       ["Lambda","Serverless event functions"],
       ["Fargate","Serverless container compute"],
       ["Elastic Beanstalk","Managed app deployment"],
+      ["Batch","Managed batch jobs"],
       ["EC2 Auto Scaling","Adjusts capacity automatically","Default termination order when scaling in: 1) AZ with most instances, 2) oldest launch template/config, 3) closest to next billing hour, 4) random. Cooldown period (default 300 sec) blocks new scaling activities from starting until the previous one finishes, so metrics stabilize before ASG reacts again"],
       ["Elastic Load Balancing","Distributes incoming traffic","ALB also supports gRPC natively (as a protocol version alongside HTTP/1.1, HTTP/2) — not just plain HTTP/HTTPS. Both ALB and NLB are inherently multi-AZ (you enable ≥2 AZs at creation). Cross-zone load balancing — evenly spreading traffic across all AZs' targets, not just whichever AZ a request lands in — is on by default for ALB"],
-      ["Outposts","AWS on-premises racks"]
+      ["Outposts","AWS on-premises racks"],
+      ["App Runner","Deploys web apps/APIs from source or container image","No infra to manage — build, deploy, auto-scale a container or repo straight to a URL"]
     ]
   },
   {
@@ -1070,11 +1089,14 @@ const CLUSTERS = [
       ["Organizations","Multi-account hierarchy"],
       ["Control Tower","Governed landing zone"],
       ["Service Control Policies","Account permission guardrails"],
+      ["Service Catalog","Approved product portfolios"],
       ["Trusted Advisor","Best-practice recommendations"],
       ["Well-Architected Tool","Self-service workload review","Reviews a workload against the 6 pillars (Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimization, Sustainability); Lenses (Serverless, SaaS, etc.) add pillar-specific/workload-specific questions on top"],
       ["Compute Optimizer","Right-sizing recommendations"],
       ["Cost Explorer","Historic spend analysis"],
       ["Budgets","Cost threshold alerts"],
+      ["License Manager","Software license tracking"],
+      ["Health Dashboard","Service event status"],
       ["Resource Access Manager","Cross-account resource sharing"]
     ]
   },
@@ -1145,7 +1167,8 @@ const CLUSTERS = [
       ["CodeBuild","Managed build service"],
       ["CodeDeploy","Automated deployment rollouts"],
       ["CodePipeline","CI/CD orchestration"],
-      ["X-Ray","Distributed request tracing"]
+      ["X-Ray","Distributed request tracing"],
+      ["Amplify","Full-stack web hosting"]
     ]
   },
   {
@@ -1159,6 +1182,9 @@ const CLUSTERS = [
       ["Lambda@Edge","Edge request processing"],
       ["CloudFront Functions","Lightweight edge scripting"],
       ["Local Zones","Latency-sensitive metro compute"],
+      ["Wavelength","5G network edge"],
+      ["WorkSpaces","Managed virtual desktops","A whole virtual desktop"],
+      ["AppStream 2.0","Streamed application delivery","Streams one application, not the desktop"],
       ["WorkDocs","Managed document storage and collaboration","Files with sharing, commenting, versioning and approval workflows — the \"corporate file share\" answer, not app storage (EFS/FSx) or object storage (S3). AWS closed it to new customers in 2024 and ended support April 2025, so treat it as a distractor — it only shows up in older question banks"]
     ]
   },
@@ -1171,7 +1197,15 @@ const CLUSTERS = [
     hook:true,
     rows:[
       ["SageMaker","Build, train, deploy","Build, train, deploy your own models"],
-      ["Bedrock","Managed foundation models","Bedrock = the foundation → foundation models via API"]
+      ["Bedrock","Managed foundation models","Bedrock = the foundation → foundation models via API"],
+      ["Rekognition","Image and video analysis","Recognizes → faces and objects in images/video"],
+      ["Comprehend","Natural language extraction","Comprehends meaning → NLP, sentiment, entities — analyzes text, is not a chatbot"],
+      ["Lex","Conversational chatbot engine","Lex = the Alexa engine → intents, slots, dialog flow, Lambda code hooks"],
+      ["Textract","Document text extraction","Extracts from documents → scanned forms and tables"],
+      ["Transcribe","Speech to text","Transcript → speech to text"],
+      ["Polly","Text to speech","Parrot → talks → text to speech"],
+      ["Translate","Automatic language translation","Says what it does"],
+      ["Kendra","Intelligent enterprise search","Natural-language questions over your own documents"]
     ]
   },
 
