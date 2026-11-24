@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AWS Professional Cards</title>
-<meta name="description" content="AWS SAP-C03 study notes, built up section by section while studying.">
+<meta name="description" content="AWS SAP-C03 study deck: professional notes, contrast sets, quick recall and lookup tables in one place.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
@@ -35,6 +35,22 @@
     --c-cost:#5C7C0F;
     --c-migrate:#8A5A00;
 
+    /* keys carried over with the contrast sets, quick recall and lookup tables */
+    --c-messaging:#0E7C86;
+    --c-lb:#3B5BC0;
+    --c-hybrid:#6B36D6;
+    --c-k8s:#1F6F8B;
+    --c-container:#9A5B12;
+    --c-database:#20629F;
+    --c-network:#6B36D6;
+    --c-integrate:#0E7C86;
+    --c-analytics:#127A5B;
+    --c-devtools:#3B5BC0;
+    --c-edge:#7A3F8C;
+    --c-ml:#A03A6E;
+    --c-sec:#C01E36;
+    --c-app:#0E7C86;
+
     --fs-display:'IBM Plex Sans Condensed','Helvetica Neue',Arial,sans-serif;
     --fs-body:'IBM Plex Sans',-apple-system,'Segoe UI',Roboto,sans-serif;
     --fs-mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
@@ -47,6 +63,8 @@
       --accent:#F0912F; --focus:#6BA6E8; --chip-ink:#0D1117;
       --c-org:#F5629F; --c-govern:#C081D6; --c-security:#F2647A; --c-compute:#F08A2E; --c-storage:#6FBF7F; --c-cache:#5FB8D6; --c-net:#A98BFF;
       --c-dr:#E8705C; --c-data:#5BA3E8; --c-ops:#3ECBD4; --c-cost:#A3C93F; --c-migrate:#D9A63C;
+      --c-messaging:#3ECBD4; --c-lb:#7E9BF0; --c-hybrid:#A98BFF; --c-k8s:#5FB8D6; --c-container:#D9A05B; --c-database:#5BA3E8; --c-network:#A98BFF;
+      --c-integrate:#3ECBD4; --c-analytics:#41C79A; --c-devtools:#7E9BF0; --c-edge:#C081D6; --c-ml:#E77FB0; --c-sec:#F2647A; --c-app:#3ECBD4;
     }
   }
   :root[data-theme="dark"]{
@@ -55,6 +73,8 @@
     --accent:#F0912F; --focus:#6BA6E8; --chip-ink:#0D1117;
     --c-org:#F5629F; --c-govern:#C081D6; --c-security:#F2647A; --c-compute:#F08A2E; --c-storage:#6FBF7F; --c-cache:#5FB8D6; --c-net:#A98BFF;
     --c-dr:#E8705C; --c-data:#5BA3E8; --c-ops:#3ECBD4; --c-cost:#A3C93F; --c-migrate:#D9A63C;
+    --c-messaging:#3ECBD4; --c-lb:#7E9BF0; --c-hybrid:#A98BFF; --c-k8s:#5FB8D6; --c-container:#D9A05B; --c-database:#5BA3E8; --c-network:#A98BFF;
+    --c-integrate:#3ECBD4; --c-analytics:#41C79A; --c-devtools:#7E9BF0; --c-edge:#C081D6; --c-ml:#E77FB0; --c-sec:#F2647A; --c-app:#3ECBD4;
   }
 
   *{box-sizing:border-box;}
@@ -87,14 +107,48 @@
   }
   .toggle:focus-visible{outline:2px solid var(--focus);outline-offset:1px;}
   .dot{width:7px;height:7px;border-radius:50%;background:var(--line);border:1px solid var(--faint);}
-  .controls{display:flex;flex-wrap:wrap;gap:.6rem;}
+  .controls{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;}
   .toggle[aria-pressed="true"]{color:var(--chip-ink);background:var(--accent);border-color:var(--accent);}
   .toggle[aria-pressed="true"] .dot{background:var(--chip-ink);border-color:var(--chip-ink);}
+
+  /* filter — searches every row in every part */
+  .field{position:relative;display:flex;align-items:center;}
+  .field svg{position:absolute;left:.6rem;width:14px;height:14px;stroke:var(--faint);fill:none;stroke-width:1.8;}
+  #q{
+    font-family:var(--fs-mono);font-size:.8rem;color:var(--ink);background:var(--surface);
+    border:1px solid var(--line);border-radius:2px;padding:.5rem .7rem .5rem 1.85rem;
+    width:220px;max-width:52vw;
+  }
+  #q::placeholder{color:var(--faint);}
+  #q:focus{outline:2px solid var(--focus);outline-offset:1px;border-color:transparent;}
 
   .hint{margin:.9rem 0 0;font-size:.85rem;color:var(--muted);max-width:70ch;}
   .hint b{color:var(--ink);font-weight:600;}
 
+  /* jump links to the four parts */
+  .parts{
+    display:flex;flex-wrap:wrap;gap:.55rem 1.4rem;margin:1rem 0 0;
+    font-family:var(--fs-mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
+  }
+  .parts a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:.12rem;}
+  .parts a:hover{color:var(--ink);border-color:var(--ink);}
+  .parts a:focus-visible{outline:2px solid var(--focus);outline-offset:2px;}
+  .parts a span{color:var(--faint);}
+
   .stack{display:flex;flex-direction:column;gap:1.75rem;margin-top:1.9rem;}
+
+  /* part heading — one per former deck */
+  .part{margin-top:.75rem;padding-top:1.3rem;border-top:2px solid var(--ink);}
+  .part:first-child{margin-top:0;padding-top:0;border-top:0;}
+  .part h2{
+    font-family:var(--fs-display);font-weight:700;font-size:1.6rem;
+    letter-spacing:-.01em;line-height:1.1;margin:0;
+  }
+  .part p{margin:.4rem 0 0;font-size:.85rem;color:var(--muted);max-width:70ch;}
+  .part p b{color:var(--ink);font-weight:600;}
+
+  .none{display:none;margin-top:2.5rem;font-family:var(--fs-mono);font-size:.85rem;color:var(--faint);}
+  body.empty .none{display:block;}
 
   section.cl{
     background:var(--surface);
@@ -137,13 +191,28 @@
   td.svc b{
     font-family:var(--fs-mono);font-size:.79rem;font-weight:600;color:var(--hue);
   }
-  body.blank td.svc b{
+  /* exam-trigger column of a contrast set */
+  td.tell{color:var(--muted);}
+  td.tell em{font-style:normal;color:var(--ink);font-weight:500;}
+
+  /* name hook under a quick-recall line — kept out of sight in blank mode until the name is revealed */
+  .hook{
+    display:block;margin-top:.15rem;font-size:.74rem;line-height:1.35;
+    color:var(--faint);font-style:italic;
+  }
+  body.blank tr:not(.on) .hook{display:none;}
+
+  /* blank mode hides the name everywhere except the lookup tables, where it hides the answers */
+  body.blank .cl:not(.lookup) td.svc b,
+  body.blank td.dest span{
     color:transparent;background:var(--line);border-radius:2px;
     cursor:pointer;display:inline-block;min-width:7rem;
     transition:background .18s ease;
   }
-  body.blank td.svc b:hover{background:var(--line-soft);}
-  body.blank td.svc b.on{color:var(--hue);background:none;cursor:default;}
+  body.blank .cl:not(.lookup) td.svc b:hover,
+  body.blank td.dest span:hover{background:var(--line-soft);}
+  body.blank .cl:not(.lookup) td.svc b.on{color:var(--hue);background:none;cursor:default;}
+  body.blank td.dest span.on{color:inherit;background:none;cursor:default;}
   @media (prefers-reduced-motion: reduce){*{transition:none !important;}}
 
   footer{
@@ -158,9 +227,13 @@
     .wrap{padding:1.4rem 1rem 3rem;}
     header.mast{align-items:stretch;gap:.9rem;}
     .controls{width:100%;}
+    .field{flex:1 1 100%;}
+    #q{width:100%;max-width:none;}
     .toggle{flex:1 1 auto;justify-content:center;padding:.65rem .7rem;}
 
     .stack{gap:1.15rem;margin-top:1.4rem;}
+    .part{margin-top:.5rem;padding-top:1.05rem;}
+    .part h2{font-size:1.4rem;}
     section.cl{padding:.9rem .95rem 1rem;}
     .cl-head h2{font-size:1.12rem;}
     .axis{font-size:.82rem;margin-bottom:.75rem;}
@@ -195,7 +268,8 @@
     }
     td.svc{width:auto;white-space:normal;margin-bottom:.15rem;}
     td.svc b{font-size:.86rem;}
-    body.blank td.svc b{min-width:8rem;}
+    body.blank .cl:not(.lookup) td.svc b,
+    body.blank td.dest span{min-width:8rem;}
   }
 
   @media (max-width:400px){
@@ -212,14 +286,21 @@
       <p><span id="count">0</span> sections &middot; SAP-C03</p>
     </div>
     <div class="controls">
+      <label class="field">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5"></circle><path d="M10.5 10.5 14 14"></path></svg>
+        <input id="q" type="search" placeholder="filter rows…" autocomplete="off" aria-label="Filter rows">
+      </label>
       <button class="toggle" id="blank" aria-pressed="false"><span class="dot"></span>Blank mode</button>
       <button class="toggle" id="shuffle" aria-pressed="false"><span class="dot"></span>Shuffle</button>
     </div>
   </header>
 
-  <p class="hint" id="hint">Built up section by section while studying &mdash; only what has actually been covered. Turn on <b>Blank mode</b> to hide the names and work backward from the behavior.</p>
+  <p class="hint" id="hint">One deck for SAP-C03: professional notes, contrast sets, quick recall and lookup tables. Turn on <b>Blank mode</b> to hide the names and work backward from the behavior.</p>
+
+  <nav class="parts" id="parts" aria-label="Parts of this deck"></nav>
 
   <div class="stack" id="stack"></div>
+  <p class="none">No row matches that filter.</p>
 
   <footer>
     <span>Reproduce from blank, then check</span>
@@ -228,7 +309,21 @@
 </div>
 
 <script>
+/* The deck has four parts, shown in this order. A cluster names its part with `part`;
+   a cluster with no `part` is a professional note. Row shapes by part:
+     pro       [term, description]             col:"What it is"
+     contrast  [service, trait, examTrigger]   col:["Trait header","Exam trigger"]
+     quick     [name, definition, hook?]       hook:true
+     lookup    [name, answer, answer2?]        hide:"answer" (blank mode hides the answers, not the name) */
+const PARTS = [
+  { id:"pro",      title:"Professional notes", note:"Notes at professional depth, built up section by section while studying." },
+  { id:"contrast", title:"Contrast sets",      note:"The groups the exam tests as sets &mdash; study them as sets, not one service at a time. Each is organised by its one deciding axis, with the exam phrasing that triggers it." },
+  { id:"quick",    title:"Quick recall",       note:"Every service, one line each &mdash; the coverage pass. Services with no near-neighbours carry a <i>name hook</i> underneath, which Blank mode keeps hidden until you reveal the name." },
+  { id:"lookup",   title:"Lookup tables",      note:"Where each managed log can be delivered, and which storage services survive an AZ or Region. Here <b>Blank mode</b> hides the answers, not the names. Logs: S3 for retention, CloudWatch Logs for alarms, Firehose for streaming." }
+];
+
 const CLUSTERS = [
+  /* ---- Professional notes ---- */
   {
     title:"Identity and Federation",
     key:"org",
@@ -429,55 +524,828 @@ const CLUSTERS = [
       ["Amazon VPC Lattice","<b>Application-layer</b> networking that connects, secures and monitors <b>service-to-service</b> traffic across VPCs and accounts, with no peering, Transit Gateway or sidecar proxies to manage. <b>Overlapping CIDRs are fine</b> &mdash; it translates addresses.<br><b>Service network</b> &mdash; the logical boundary; services and VPCs associated with it can talk, if authorized.<br><b>Service</b> &mdash; listeners, rules and target groups; targets can be EC2 instances, IP addresses, Lambda functions, ALBs, ECS tasks or Kubernetes pods.<br><b>Auth policy</b> &mdash; an IAM policy document on the service network or on a service.<br>A VPC associates with only <b>one service network</b> (more through service-network VPC endpoints); a service can join many. Shared across accounts with <b>AWS RAM</b>. <b>Regional</b> &mdash; cross-Region still needs Transit Gateway, peering or Cloud WAN.<br>PrivateLink exposes one service in one direction; this is many-to-many with IAM authorization."],
       ["AWS Cloud WAN","A managed <b>global network</b> connecting VPCs, data centers and branch offices across Regions from one dashboard, driven by a single <b>core network policy</b> (a versioned JSON document).<br><b>Core network edge</b> &mdash; the AWS-managed connection point in each Region, much like a Transit Gateway. Edges <b>peer with each other in a full mesh automatically</b>.<br><b>Segments</b> &mdash; isolated routing domains that span Regions, such as production and development.<br><b>Attachments</b> &mdash; VPC, Site-to-Site VPN, Connect (SD-WAN), Direct Connect gateway and Transit Gateway route table. <b>Attachment policies</b> map them to segments by <b>tag</b>.<br><b>Service insertion</b> steers traffic through firewalls placed in a network function group.<br>Transit Gateway is <b>Regional</b> &mdash; you build the inter-Region peering and static routes yourself. This is the answer for <b>many Regions under one policy</b>."]
     ]
+  },
+
+  /* ---- Contrast sets: from Concept Cards. Three cells per row; the last column is the exam trigger ---- */
+  {
+    part:"contrast",
+    title:"Security detection",
+    key:"security",
+    axis:"What does it look at?",
+    col:["Inspects","Exam trigger"],
+    rows:[
+      ["GuardDuty","VPC Flow Logs, DNS logs, CloudTrail","<em>Compromised instance, crypto-mining, unusual API calls</em> &mdash; threats happening now"],
+      ["Inspector","EC2, Lambda, ECR images","<em>CVE, patch level, unintended network exposure</em> &mdash; software vulnerabilities"],
+      ["Macie","Objects inside S3","<em>PII, credentials, financial data in a bucket</em> &mdash; data classification"],
+      ["Detective","Existing findings + logs","<em>Investigate the root cause / scope</em> &mdash; after a finding exists"],
+      ["Security Hub","Findings from all the above","<em>Aggregate across accounts, CIS/PCI compliance</em> &mdash; single pane"],
+      ["Trusted Advisor","Your account configuration","<em>Service limits, idle resources, best practices</em> &mdash; not security-only"]
+    ]
+  },
+  {
+    part:"contrast",
+    title:"Storage",
+    key:"storage",
+    axis:"How is it accessed &mdash; and by how many things at once?",
+    col:["Type & protocol","Exam trigger"],
+    rows:[
+      ["S3","Object, over HTTP API","<em>Any scale, static assets, data lake, backups</em> &mdash; not mountable as a filesystem"],
+      ["EBS","Block, one AZ, one instance","<em>Boot volume, database on EC2</em> &mdash; AZ-locked; snapshots live in S3"],
+      ["EFS","File, NFS, Linux only","<em>Shared across many instances, multi-AZ</em> &mdash; grows automatically"],
+      ["FSx for Windows","File &mdash; <b>SMB</b> only","<em>Windows apps, Active Directory integration</em>"],
+      ["FSx for Lustre","File &mdash; <b>Lustre client</b>, POSIX, very high throughput","<em>HPC, ML training, processes data in S3</em> &mdash; not NFS; needs the Lustre client, Linux only"],
+      ["FSx for OpenZFS","File &mdash; <b>NFS</b> only (v3&ndash;v4.2)","<em>Linux workloads wanting ZFS snapshots, clones, compression</em> &mdash; ZFS is the filesystem, NFS is how you reach it; if the question says SMB, this is wrong"],
+      ["FSx for NetApp ONTAP","File &mdash; <b>NFS + SMB + iSCSI</b> on the same data","<em>Linux and Windows clients need the same dataset</em> &mdash; the only multi-protocol answer; also NetApp snapshots and dedup"],
+      ["Instance Store","Block, ephemeral, local disk","<em>Highest IOPS, data may be lost</em> &mdash; gone on stop or terminate"]
+    ]
+  },
+  {
+    part:"contrast",
+    title:"Messaging &amp; streaming",
+    key:"messaging",
+    axis:"Who receives it, and can it be replayed?",
+    col:["Delivery model","Exam trigger"],
+    rows:[
+      ["SQS","Queue &mdash; one consumer pulls, then deletes","<em>Decouple, buffer load, process once</em> &mdash; no replay. FIFO = ordered, exactly-once"],
+      ["SNS","Pub/sub &mdash; pushes to many subscribers","<em>Notify multiple endpoints</em> &mdash; no persistence. SNS&nbsp;+&nbsp;SQS = durable fan-out"],
+      ["EventBridge","Event bus &mdash; rules route by content","<em>SaaS and AWS service events, scheduled rules</em> &mdash; filters on the payload"],
+      ["Kinesis Data Streams","Ordered shards &mdash; many consumers read the same data","<em>Real-time analytics, replay, multiple apps on one stream</em> &mdash; 1&ndash;365 day retention"],
+      ["Data Firehose","Delivery pipeline, near-real-time","<em>Just land the stream in S3/Redshift/OpenSearch</em> &mdash; no code, no replay"]
+    ]
+  },
+  {
+    part:"contrast",
+    title:"Load balancing &amp; traffic",
+    key:"lb",
+    axis:"Which layer does it operate at? &mdash; ALB = content, NLB = speed and static IP, GWLB = appliance insertion",
+    col:["Layer","Exam trigger"],
+    rows:[
+      ["Elastic Load Balancing (ELB)","Not a type &mdash; the service name","<em>The umbrella covering the three below</em> &mdash; if an option just says “ELB”, it isn't a fourth choice"],
+      ["ALB","Layer 7 &mdash; HTTP/HTTPS/WebSocket","<em>Route by URL path, hostname, header or query string</em> &mdash; targets can be EC2, containers, Lambda or IPs; its IPs change"],
+      ["NLB","Layer 4 &mdash; TCP/UDP/TLS","<em>Static IP per AZ (or your own Elastic IP), millions of requests/sec, non-HTTP protocols</em> &mdash; preserves the client source IP"],
+      ["Gateway Load Balancer","Layer 3","<em>Transparently route traffic through a third-party firewall or IDS/IPS for inspection</em> &mdash; GENEVE port 6081; neither ALB nor NLB does this"],
+      ["Classic Load Balancer","Legacy, layer 4 and 7 hybrid","<em>Pre-dates the other three</em> &mdash; almost always the wrong answer; appears only as a legacy distractor"],
+      ["Global Accelerator","Not a load balancer &mdash; network path","<em>Static anycast IPs, global failover, non-HTTP traffic</em> &mdash; skips DNS caching problems"],
+      ["CloudFront","CDN at the edge","<em>Cache static and dynamic content close to users</em> &mdash; HTTP only"]
+    ]
+  },
+  {
+    part:"contrast",
+    title:"Hybrid connectivity",
+    key:"hybrid",
+    axis:"Private, encrypted, or built to scale?",
+    col:["What it gives you","Exam trigger"],
+    rows:[
+      ["Site-to-Site VPN","Encrypted, over the public internet","<em>Quick and cheap</em> &mdash; variable latency; set up in hours"],
+      ["Direct Connect","Dedicated physical circuit","<em>Consistent latency, high bandwidth, lower egress cost</em> &mdash; takes weeks; not encrypted by itself"],
+      ["Direct Connect + VPN","Dedicated <em>and</em> encrypted","<em>Regulator requires encryption in transit over DX</em>"],
+      ["DX Gateway","One DX reaching VPCs in many regions","<em>Global footprint on a single circuit</em>"],
+      ["Transit Gateway","Hub-and-spoke for many VPCs and on-prem","<em>Dozens or hundreds of VPCs</em> &mdash; replaces a peering mesh, transitive routing"],
+      ["VPC Peering","One-to-one VPC link","<em>Just two VPCs</em> &mdash; no transitive routing, no overlapping CIDRs"],
+      ["Gateway Endpoint","Route-table entry, S3 and DynamoDB only","<em>Reach S3 without an internet gateway</em> &mdash; free"],
+      ["PrivateLink / Interface Endpoint","ENI with a private IP in your VPC","<em>Expose or consume a service privately</em> &mdash; scales to many consumers"]
+    ]
+  },
+  {
+    part:"contrast",
+    title:"Governance &amp; audit",
+    key:"govern",
+    axis:"Does it prevent, detect, or set things up?",
+    col:["Role","Exam trigger"],
+    rows:[
+      ["Organizations","Structure","<em>Accounts, OUs, consolidated billing</em> &mdash; the foundation the rest sits on"],
+      ["Service Control Policies","Prevent &mdash; evaluated on the API call itself","<em>Guardrail no one can exceed</em> &mdash; caps permissions, never grants them; restricts regions (aws:RequestedRegion), instance types, and can <b>require a tag at creation</b> via aws:RequestTag. But it has no inventory and no evaluation engine, so an option that says “use an SCP to <b>detect</b>” is always wrong &mdash; and attaching one does nothing about resources that already exist"],
+      ["IAM policies","Grant","<em>Permissions within one account</em>"],
+      ["Control Tower","Set up","<em>New multi-account landing zone with best practices</em> &mdash; built on Organizations"],
+      ["Config","Detect &mdash; configuration over time","<em>Was this resource ever non-compliant?</em> &mdash; history and auto-remediation via SSM Automation. The managed <b>required-tags</b> rule is the least-effort answer to “check for untagged resources”: no code to write, and it evaluates resources that already existed before you enabled it &mdash; which is what beats a scheduled Lambda on any “LEAST effort” wording"],
+      ["CloudTrail","Detect &mdash; API calls","<em>Who deleted the bucket, and when?</em>"],
+      ["CloudWatch","Monitor &mdash; metrics and logs","<em>CPU is high, error rate spiked</em> &mdash; alarms"],
+      ["Systems Manager","Act","<em>Patch the fleet, run a command, store parameters</em>"]
+    ]
+  },
+  {
+    part:"contrast",
+    title:"Deep monitoring by service",
+    key:"govern",
+    axis:"Default metrics never show you inside &mdash; what do you turn on, per service, and is it a checkbox or an agent you install?",
+    col:["What you enable","Exam trigger"],
+    rows:[
+      ["EC2","Install the <b>CloudWatch Agent</b> in the guest OS","<b>Without it</b> &mdash; the hypervisor's view, 5-min basic / 1-min detailed: CPUUtilization, NetworkIn/Out and packets, DiskRead/WriteOps and Bytes (<em>instance store only</em> &mdash; EBS reports in its own namespace), StatusCheckFailed (instance / system), CPU credit balance on burstable types.<br><b>With it</b> &mdash; from inside the OS: memory used %, <em>disk space</em> used % per filesystem, swap usage, per-process CPU and memory (procstat), TCP connection states, and any application log file shipped to CloudWatch Logs.<br><em>The tell: memory or disk space on EC2 always means the agent.</em>"],
+      ["On-prem / other clouds","Install the <b>CloudWatch Agent</b>","<em>Same agent as EC2</em> &mdash; the answer whenever the question says hybrid or “servers outside AWS”"],
+      ["RDS","Turn on <b>Enhanced Monitoring</b> &mdash; a checkbox, no agent for you to install","<b>Without it</b> &mdash; the hypervisor's view, 60-second: CPUUtilization, <em>FreeableMemory</em>, FreeStorageSpace, DatabaseConnections, Read/WriteIOPS, Read/WriteLatency, Read/WriteThroughput, DiskQueueDepth, SwapUsage, ReplicaLag, BurstBalance.<br><b>With it</b> &mdash; from inside the OS, down to 1 second: the <em>process list</em> with per-process CPU and memory, the CPU breakdown (user / system / wait / <em>steal</em>) instead of one aggregate number, loadAverage, per-filesystem usage, task counts.<br><em>Memory is already in the default set &mdash; this buys granularity and “which process”, not memory. The EC2 trap doesn't transfer.</em>"],
+      ["RDS &mdash; query level","Turn on <b>Performance Insights</b>","<em>“Which SQL statement is causing the load”</em> &mdash; Average Active Sessions, top SQL, top waits; a different question from OS-level, and the wrong answer to “which process”"],
+      ["ECS","Enable <b>Container Insights</b> on the cluster &mdash; a cluster setting","<em>Task- and container-level CPU, memory, network, plus performance logs</em> &mdash; default ECS metrics are cluster/service-level only; nothing to install, and it covers Fargate too"],
+      ["EKS","Deploy the <b>CloudWatch agent as a DaemonSet</b> (plus Fluent Bit for logs)","<em>Container Insights for Kubernetes</em> &mdash; unlike ECS this is a workload you install into the cluster, not just a checkbox; if the question says “open-source” or “PromQL”, it's Managed Service for Prometheus instead"],
+      ["Lambda","Nothing &mdash; metrics and logs are automatic","<em>Invocations, Duration, Errors, Throttles, ConcurrentExecutions; logs land in CloudWatch Logs</em> &mdash; add <b>X-Ray</b> when the question asks to trace a request across services"]
+    ]
+  },
+  {
+    part:"contrast",
+    title:"RDS monitoring",
+    key:"govern",
+    axis:"Where is the metric measured from &mdash; outside the instance, inside the OS, or inside the database engine? &mdash; and note the EC2 trap doesn't apply here: RDS gives you memory by default",
+    col:["Vantage point / granularity","Exam trigger"],
+    rows:[
+      ["CloudWatch &mdash; default metrics","Outside the instance, from the hypervisor &mdash; 60-second granularity, free","<em>CPUUtilization, DatabaseConnections, FreeStorageSpace, ReadIOPS/WriteIOPS, ReadLatency/WriteLatency, DiskQueueDepth, ReplicaLag, SwapUsage</em> &mdash; and <b>FreeableMemory is already here</b>; unlike EC2, RDS needs no agent to report memory"],
+      ["Enhanced Monitoring","Inside the guest OS, via an agent on the DB instance &mdash; down to <b>1-second</b> granularity, extra cost","<em>Per-process CPU and memory, the OS process list, loadAverage, per-filesystem usage</em> &mdash; “which process is consuming the CPU”, “need finer than one minute”; it upgrades granularity, it doesn't invent memory visibility. Lands in <b>CloudWatch Logs</b>, not CloudWatch metrics"],
+      ["Performance Insights","Inside the database engine","<em>DB load as Average Active Sessions, top SQL, top waits, top hosts and users</em> &mdash; “which query is causing the load”; 7 days retention free, longer is paid"],
+      ["Database logs to CloudWatch Logs","The engine's own log files","<em>Slow query log, error log, audit log</em> &mdash; published from the DB instance; a log source, not a metric source"]
+    ]
+  },
+  {
+    part:"contrast",
+    title:"Caching &amp; acceleration",
+    key:"cache",
+    axis:"What is cached, and where does it sit?",
+    col:["Caches what, where","Exam trigger"],
+    rows:[
+      ["CloudFront","Content, at edge locations","<em>Serve static or dynamic content globally</em> &mdash; TTL, invalidation, OAC to S3"],
+      ["ElastiCache for Redis","App data, in your VPC","<em>Session store, leaderboard, needs to survive failover</em> &mdash; persistence, replicas, multi-AZ"],
+      ["ElastiCache for Memcached","App data, in your VPC","<em>Simple, cheap, scale out horizontally</em> &mdash; no persistence, no failover"],
+      ["DAX","DynamoDB reads, in your VPC","<em>Microsecond DynamoDB reads</em> &mdash; DynamoDB only, minimal code change"],
+      ["Global Accelerator","Nothing &mdash; optimizes the network path","<em>Static IPs, TCP/UDP, route over the AWS backbone</em>"],
+      ["S3 Transfer Acceleration","Nothing &mdash; speeds uploads via edge","<em>Users far from the bucket uploading large files</em>"]
+    ]
+  },
+  {
+    part:"contrast",
+    title:"CloudFront access control",
+    key:"cache",
+    axis:"How many objects does one grant cover, and does the client support cookies?",
+    col:["Scope / mechanism","Exam trigger"],
+    rows:[
+      ["Signed URL","One object per URL","<em>Single file, RTMP distributions, or a client that can't send cookies</em> &mdash; the URL itself carries the policy and signature"],
+      ["Signed Cookie","Many objects under one grant, URLs unchanged","<em>Give a logged-in user access to a whole path (e.g. every file in a course)</em> &mdash; one cookie instead of a signed URL per object; needs cookie support in the client"],
+      ["Origin Access Control (OAC)","Neither &mdash; restricts the origin itself","<em>Force all requests to an S3 origin through CloudFront, block direct S3 access</em> &mdash; solves a different problem: is this the origin's only front door, not who gets which object"]
+    ]
+  },
+  {
+    part:"contrast",
+    title:"S3 data protection",
+    key:"storage",
+    axis:"How permanent is it &mdash; and who is allowed to undo it?",
+    col:["What it does","Exam trigger"],
+    rows:[
+      ["Versioning","Keeps every version; a delete just adds a marker","<em>Recover from accidental overwrite or delete</em> &mdash; prerequisite for everything below"],
+      ["Object Lock &mdash; Governance","WORM, but overridable","<em>Protect from accidental deletion, admins can still fix it</em> &mdash; needs s3:BypassGovernanceRetention"],
+      ["Object Lock &mdash; Compliance","WORM, absolute","<em>Regulatory requirement, must be truly immutable</em> &mdash; not even the root account can delete or shorten it"],
+      ["Legal Hold","WORM with no expiry date","<em>Indefinite hold for litigation</em> &mdash; toggled on/off per object, independent of any retention period"],
+      ["MFA Delete","Requires MFA to delete a version or suspend versioning","<em>Extra gate on destructive actions</em> &mdash; only the root account can turn it on"],
+      ["Replication (CRR / SRR)","Async copy to another bucket","<em>Cross-region DR or compliance residency</em> &mdash; versioning on both ends; not retroactive without Batch Replication"],
+      ["Lifecycle rules","Transition or expire objects by age","<em>Move to cheaper tier or delete after N days</em>"]
+    ]
+  },
+  {
+    part:"contrast",
+    title:"EC2 purchasing options",
+    key:"lb",
+    axis:"How interruptible is it, and how long is the commitment? &mdash; and watch the trap: “reserve capacity in a specific AZ” means a Zonal RI or an On-Demand Capacity Reservation, never a Regional RI and never plain On-Demand",
+    col:["Commitment / interruption","Exam trigger"],
+    rows:[
+      ["On-Demand","No commitment, full price, capacity not guaranteed","<em>Short-term, spiky, can't be interrupted, testing</em> &mdash; pay by the second, stop anytime; can still hit an insufficient-capacity error"],
+      ["Reserved Instances","1 or 3 year term, specific instance family","<em>Steady-state, predictable usage</em> &mdash; up to ~72% off; Standard = locked config, Convertible = can change instance type"],
+      ["Savings Plans","1 or 3 year $/hr spend commitment","<em>Steady-state but flexible across instance family/size/region</em> &mdash; also covers Fargate/Lambda"],
+      ["Spot Instances","No commitment, can be reclaimed with 2-min warning","<em>Fault-tolerant, flexible, batch jobs, cheapest</em> &mdash; up to 90% off; never for anything that can't be interrupted"],
+      ["Dedicated Hosts","Physical server, fully allocated to you","<em>Bring your own license (BYOL) tied to socket/core/VM count, compliance needs visibility into hardware</em> &mdash; most expensive"],
+      ["Dedicated Instances","Instances on hardware dedicated to your account","<em>Isolation requirement, but don't need to control host placement</em> &mdash; no visibility into the physical server"],
+      ["On-Demand Capacity Reservations","Reserves capacity in one specific AZ, no term commitment","<em>Guarantee the capacity is there when the job runs</em> &mdash; billed whether or not you launch into it; pair with an RI or Savings Plan for the discount"]
+    ]
+  },
+  {
+    part:"contrast",
+    title:"Auto Scaling policies",
+    key:"govern",
+    axis:"Does it react, aim for a number, or run on a clock?",
+    col:["How it decides","Exam trigger"],
+    rows:[
+      ["Target Tracking","Pick a metric and a target value; ASG adjusts to hold it","<em>\"Keep average CPU at 50%\"</em> &mdash; the default, simplest choice; like a thermostat"],
+      ["Simple Scaling","One alarm &rarr; one fixed change, then a cooldown before it can act again","<em>Legacy option</em> &mdash; if it's on the exam, it's usually the wrong answer vs. step or target tracking"],
+      ["Step Scaling","One alarm, but the size of the change varies with how far past the threshold","<em>Traffic spikes are unpredictable in size</em> &mdash; no cooldown wait, can respond again while still scaling"],
+      ["Scheduled Scaling","Change capacity at a specific date/time","<em>Known traffic pattern</em> &mdash; Black Friday, every weekday at 8am"],
+      ["Predictive Scaling","Forecasts from historical load, scales ahead of time","<em>Recurring daily/weekly pattern, want capacity ready before demand hits</em> &mdash; ML-based, works alongside dynamic scaling"]
+    ]
+  },
+  {
+    part:"contrast",
+    title:"Fronting an API",
+    key:"messaging",
+    axis:"What shape is the client contract &mdash; REST, GraphQL, WebSocket, or plain HTTP to a server?",
+    col:["What it exposes","Exam trigger"],
+    rows:[
+      ["API Gateway &mdash; REST","REST endpoints, request/response","<em>Serverless API in front of Lambda, throttling, API keys, usage plans</em> &mdash; the default API answer; also does caching and request validation"],
+      ["API Gateway &mdash; HTTP API","Leaner, cheaper REST-style API","<em>Just proxy to Lambda quickly, don't need usage plans or caching</em> &mdash; lower cost and latency than REST API"],
+      ["API Gateway &mdash; WebSocket","Persistent two-way connections","<em>Chat, live notifications, bidirectional messaging</em>"],
+      ["AppSync","<b>GraphQL</b> (and real-time subscriptions)","<em>Clients query exactly the fields they need, one call across several data sources</em> &mdash; if the question says GraphQL, this is the answer; offline sync for mobile"],
+      ["ALB","Plain HTTP/HTTPS to your own servers","<em>Containers or EC2 running the API themselves</em> &mdash; no managed throttling, keys or auth layer"],
+      ["CloudFront","Cached edge distribution in front of any of these","<em>Global latency on API responses</em> &mdash; sits ahead of API Gateway or an ALB, doesn't replace them"]
+    ]
+  },
+  {
+    part:"contrast",
+    title:"EKS / Kubernetes autoscaling",
+    key:"k8s",
+    axis:"Which layer is being scaled &mdash; the pods inside the cluster, or the nodes underneath them?",
+    col:["Layer / what it changes","Exam trigger"],
+    rows:[
+      ["Horizontal Pod Autoscaler (HPA)","Pod layer &mdash; <b>more replicas</b>","<em>Traffic surge, scale the app out</em> &mdash; the default pod-scaling answer; needs Metrics Server installed"],
+      ["Vertical Pod Autoscaler (VPA)","Pod layer &mdash; <b>bigger pods</b>","<em>Pods are under- or over-resourced, right-size their CPU/memory</em> &mdash; restarts pods to apply, so wrong for a live traffic spike"],
+      ["Metrics Server","Neither &mdash; a prerequisite","<em>HPA and VPA read pod CPU and memory from it</em> &mdash; install it first; not a scaler itself"],
+      ["Karpenter","Node layer &mdash; provisions EC2 instances directly","<em>“LEAST operational overhead”, right-sized nodes, fast</em> &mdash; no node groups or ASGs to manage; picks instance types itself"],
+      ["Cluster Autoscaler","Node layer &mdash; resizes EC2 Auto Scaling groups","<em>Add nodes when pods are stuck Pending</em> &mdash; works, but you maintain the node groups; loses to Karpenter on overhead"],
+      ["CloudWatch Alarms","Not a Kubernetes mechanism","<em>Distractor on any EKS scaling question</em> &mdash; alarms drive EC2 ASG scaling, not pod replicas"],
+      ["Fargate for EKS","No nodes at all","<em>Don't want to manage capacity in the first place</em> &mdash; AWS runs each pod; no node scaling to configure"]
+    ]
+  },
+  {
+    part:"contrast",
+    title:"S3 storage class durations",
+    key:"storage",
+    axis:"Minimum storage duration and retrieval time &mdash; the two numbers that decide the answer",
+    col:["Min duration / retrieval","Exam trigger"],
+    rows:[
+      ["S3 Standard","None / milliseconds","<em>Frequently accessed, no commitment</em> &mdash; the default"],
+      ["S3 Standard-IA","30 days / milliseconds","<em>Accessed less than monthly but needs instant access when it is</em> &mdash; per-GB retrieval fee"],
+      ["S3 One Zone-IA","30 days / milliseconds","<em>Same as Standard-IA but re-creatable data</em> &mdash; single AZ, ~20% cheaper, no AZ resilience"],
+      ["S3 Glacier Instant Retrieval","90 days / milliseconds","<em>Accessed once a quarter, still needs instant access</em>"],
+      ["S3 Glacier Flexible Retrieval","90 days / minutes&ndash;hours","<em>Archive, occasional retrieval OK with a wait</em> &mdash; Expedited (1&ndash;5 min), Standard (3&ndash;5 hr), Bulk (5&ndash;12 hr)"],
+      ["S3 Glacier Deep Archive","180 days / hours","<em>Long-term archive, rarely if ever restored</em> &mdash; cheapest; Standard (12 hr), Bulk (48 hr)"],
+      ["S3 Intelligent-Tiering","None &mdash; moves automatically","<em>Unknown or changing access pattern</em> &mdash; no retrieval fees, small monitoring fee per object"]
+    ]
+  },
+  {
+    part:"contrast",
+    title:"Analytics",
+    key:"messaging",
+    axis:"What shape is the data, and what are you doing to it?",
+    col:["Role in the pipeline","Exam trigger"],
+    rows:[
+      ["S3 (data lake)","Raw storage, any format &mdash; schema-on-read","<em>Store anything now, decide the structure later</em> &mdash; cheap, flexible, not fast to query"],
+      ["Redshift (data warehouse)","Structured, modeled tables &mdash; schema-on-write","<em>Complex analytical queries, BI reporting, joins at petabyte scale</em> &mdash; ETL work happens before loading"],
+      ["Athena","Query engine over S3","<em>Ad-hoc SQL against data already in S3, serverless, pay per scan</em> &mdash; no cluster to run"],
+      ["Glue","Serverless ETL + Data Catalog","<em>Transform and catalog data</em> &mdash; the catalog is what makes Athena and Redshift Spectrum able to read the lake"],
+      ["EMR","Managed Hadoop / Spark cluster","<em>Custom big-data processing, existing Spark/Hive jobs</em> &mdash; you manage a cluster, unlike Athena"],
+      ["Lake Formation","Governance layer over the lake","<em>Fine-grained (column/row) permissions and cross-account sharing on S3 data</em> &mdash; refers to data in place, doesn't copy it"],
+      ["OpenSearch Service","Search and log analytics","<em>Full-text search, log exploration, dashboards over operational data</em>"],
+      ["QuickSight","BI visualization layer","<em>Dashboards and charts for business users</em> &mdash; sits on top of the others, never the storage answer"],
+      ["Redshift Spectrum","Redshift querying S3 directly","<em>Join warehouse tables against lake data without loading it</em>"]
+    ]
+  },
+  {
+    part:"contrast",
+    title:"Encryption &amp; key management",
+    key:"security",
+    axis:"Who holds the key, and who performs the encryption?",
+    col:["Key owner / where it happens","Exam trigger"],
+    rows:[
+      ["SSE-S3","AWS owns and manages the key; AWS encrypts","<em>Just encrypt it, no key requirements</em> &mdash; the default (AES-256); no audit trail of key use"],
+      ["SSE-KMS","You own a KMS key; AWS encrypts","<em>Need an audit trail, rotation, or separate permissions on the key</em> &mdash; CloudTrail logs every key use; watch for KMS request throttling on high-volume reads"],
+      ["SSE-C","You supply the key on every request; AWS encrypts","<em>You must hold the keys yourself but still want S3 to do the work</em> &mdash; AWS never stores the key; HTTPS required; lose it and the data is gone"],
+      ["Client-Side Encryption","You hold the key; you encrypt before upload","<em>Data must never reach AWS in plaintext</em> &mdash; you handle keys and the encryption entirely"],
+      ["DSSE-KMS","Two layers of KMS encryption, AWS applies both","<em>Regulatory requirement for dual-layer encryption</em>"],
+      ["KMS","Managed keys, AWS multi-tenant HSMs","<em>Standard key management across AWS services</em> &mdash; AWS-managed or customer-managed keys (CMK)"],
+      ["CloudHSM","Single-tenant, FIPS 140-2 Level 3 hardware, you control it","<em>Regulator requires you to control the hardware, or you need custom key operations</em> &mdash; AWS cannot recover your keys"],
+      ["Bucket Keys","Reduces KMS calls by caching a bucket-level key","<em>SSE-KMS is too expensive or hitting KMS limits</em> &mdash; cuts KMS request costs up to 99%"]
+    ]
+  },
+  {
+    part:"contrast",
+    title:"Route 53 record types",
+    key:"hybrid",
+    axis:"Alias or not &mdash; and remember an Alias is only ever type A or AAAA, never CNAME",
+    col:["What it is","Exam trigger"],
+    rows:[
+      ["Alias &mdash; A","Points a name at an AWS resource over IPv4","<em>Point the apex domain at an ALB, CloudFront, S3 website</em> &mdash; free queries, follows the resource's changing IPs"],
+      ["Alias &mdash; AAAA","Same, over IPv6","<em>Dual-stack VPC</em> &mdash; pair it with an Alias A record; that's the classic “select TWO” answer"],
+      ["Non-Alias A","Maps a name to a fixed IPv4 address","<em>You have a static IP to hard-code</em> &mdash; wrong for an ALB, whose IPs change"],
+      ["CNAME","Maps a name to another domain name","<em>A subdomain pointing at another hostname</em> &mdash; charged per query, and <b>never valid at the zone apex</b>"],
+      ["Alias targets (what's allowed)","ALB/NLB, CloudFront, S3 website endpoint, API Gateway, Elastic Beanstalk, Global Accelerator, another record in the same zone","<em>If the option aliases to an EC2 instance, it's wrong</em> &mdash; that's not a valid alias target"],
+      ["MX / NS / TXT / PTR","Mail routing, delegation, verification, reverse lookup","<em>Distractors on load-balancer questions</em> &mdash; none of them point traffic at an ALB"]
+    ]
+  },
+  {
+    part:"contrast",
+    title:"VPC internet access",
+    key:"hybrid",
+    axis:"Which direction, and which IP version?",
+    col:["Direction / version","Exam trigger"],
+    rows:[
+      ["Internet Gateway","Inbound + outbound, IPv4 and IPv6","<em>Public subnet needs to reach and be reached from the internet</em> &mdash; one per VPC, horizontally scaled, no bandwidth limit"],
+      ["NAT Gateway","Outbound only, <b>IPv4</b>","<em>Private subnet instances need to download updates / call APIs</em> &mdash; lives in a public subnet, AWS-managed, one per AZ for HA"],
+      ["Egress-Only Internet Gateway","Outbound only, <b>IPv6</b>","<em>Same job as NAT Gateway, but for IPv6</em> &mdash; IPv6 addresses are already public, so NAT isn't the mechanism; this just blocks inbound"],
+      ["NAT Instance","Outbound only, IPv4 &mdash; an EC2 you manage","<em>Legacy / cost-sensitive / needs to double as a bastion</em> &mdash; single point of failure, must disable source/dest check"]
+    ]
+  },
+  {
+    part:"contrast",
+    title:"EBS volume types",
+    key:"storage",
+    axis:"SSD or HDD &mdash; and are you paying for IOPS or for throughput?",
+    col:["Media / what you pay for","Exam trigger"],
+    rows:[
+      ["gp3 / gp2","General-purpose SSD","<em>Boot volumes, dev/test, most workloads</em> &mdash; gp3 lets you set IOPS and throughput independently of size; the default answer"],
+      ["io2 Block Express / io1","Provisioned IOPS SSD","<em>Critical database needing sustained high IOPS, sub-millisecond latency</em> &mdash; the only types that support Multi-Attach. io1 max IOPS = 50 &times; size in GiB (e.g. 10 GiB &rarr; 500 IOPS max), with a 100 IOPS floor regardless of size; keep queue length low (&asymp;1 per 500 IOPS provisioned) &mdash; higher queue length doesn't raise IOPS, just latency"],
+      ["st1","Throughput-optimized HDD","<em>Big sequential reads: log processing, data warehouses, Kafka</em> &mdash; cheap, cannot be a boot volume"],
+      ["sc1","Cold HDD","<em>Infrequently accessed, lowest cost per GB</em> &mdash; cannot be a boot volume"],
+      ["Instance Store","Local NVMe/SSD on the host","<em>Highest IOPS, data can be lost</em> &mdash; not EBS at all; gone on stop/terminate"]
+    ]
+  },
+  {
+    part:"contrast",
+    title:"Firewalls &amp; traffic filtering",
+    key:"security",
+    axis:"Which layer, which scope &mdash; and does it remember the connection?",
+    col:["Where it sits","Exam trigger"],
+    rows:[
+      ["Security Group","Instance / ENI level &mdash; <b>stateful</b>","<em>Allow rules only; return traffic is automatically allowed</em> &mdash; evaluates all rules before deciding"],
+      ["Network ACL","Subnet level &mdash; <b>stateless</b>","<em>Allow and deny rules, numbered, first match wins</em> &mdash; must open the ephemeral port range for return traffic; the only place to block a specific IP"],
+      ["WAF","Layer 7, in front of ALB / CloudFront / API Gateway","<em>SQL injection, XSS, rate limiting, geo-blocking, bad bots</em> &mdash; inspects HTTP requests"],
+      ["Shield Standard / Advanced","Network + transport DDoS","<em>Volumetric DDoS protection</em> &mdash; Standard is free and automatic; Advanced adds 24/7 response team and cost protection"],
+      ["Network Firewall","VPC-level managed firewall","<em>Stateful inspection, IDS/IPS, domain filtering across the whole VPC</em> &mdash; sits at the VPC edge, not per instance"],
+      ["Firewall Manager","Management layer over the above","<em>Apply WAF / Shield / SG rules across many accounts in an Organization</em> &mdash; it doesn't filter anything itself"]
+    ]
+  },
+  {
+    part:"contrast",
+    title:"Identity &amp; federation",
+    key:"security",
+    axis:"Whose identities &mdash; employees, customers, or an existing directory?",
+    col:["Who it's for","Exam trigger"],
+    rows:[
+      ["IAM","Identities inside one AWS account","<em>Users, groups, roles, policies</em> &mdash; the primitive everything else maps onto"],
+      ["IAM Identity Center","Workforce SSO across many accounts","<em>Employees signing into the console / CLI across an Organization</em> &mdash; the modern “AWS SSO”"],
+      ["Cognito","Your application's end users","<em>Sign-up / sign-in for a web or mobile app, social logins</em> &mdash; User Pools authenticate, Identity Pools hand out AWS credentials"],
+      ["Directory Service &mdash; Managed AD","Full Active Directory running in AWS","<em>Need a real AD in the cloud, trust with on-prem</em>"],
+      ["Directory Service &mdash; AD Connector","Proxy to your existing on-prem AD","<em>Keep users in on-prem AD, just let AWS authenticate against it</em> &mdash; no data cached in AWS"],
+      ["Directory Service &mdash; Simple AD","Lightweight Samba-based directory","<em>Small shop, no existing AD, basic needs</em> &mdash; the cheap distractor"],
+      ["SAML 2.0 federation + IAM Roles","Map corporate identities to AWS roles","<em>“Federate with existing IdP”, “roles from AD groups”</em> &mdash; AD group &rarr; SAML assertion &rarr; assumed IAM role"],
+      ["STS","Temporary credentials","<em>AssumeRole, cross-account access, any federation</em> &mdash; the plumbing under every role assumption"]
+    ]
+  },
+  {
+    part:"contrast",
+    title:"Moving data into AWS",
+    key:"hybrid",
+    axis:"One-time bulk, ongoing sync, or a live hybrid mount &mdash; and is the network big enough?",
+    col:["Motion pattern","Exam trigger"],
+    rows:[
+      ["DataSync","Online, scheduled or one-time bulk transfer","<em>Migrate NFS/SMB/HDFS/S3 data over the network, then get out of the way</em> &mdash; can write straight into any S3 class incl. Deep Archive"],
+      ["Storage Gateway &mdash; File","Ongoing hybrid access, NFS/SMB front, S3 behind","<em>On-prem apps keep reading/writing files that land in S3</em> &mdash; local cache, stays in the path"],
+      ["Storage Gateway &mdash; Volume","iSCSI block volumes backed by S3","<em>On-prem block storage with cloud backup</em> &mdash; Cached (primary in S3) vs Stored (primary on-prem, async to S3)"],
+      ["Storage Gateway &mdash; Tape","Virtual tape library","<em>Replace physical tape backups without changing the backup software</em>"],
+      ["Snow Family","Physical device shipped to you","<em>Tens of TB or more and “slow network” / “bandwidth bottleneck”</em> &mdash; Snowcone ~8 TB, Snowball Edge ~80 TB per device; rule of thumb: over a week of transfer time, use Snow"],
+      ["S3 Transfer Acceleration","Routes uploads via the nearest edge onto the AWS backbone","<em>Users geographically far from the bucket</em> &mdash; fixes <b>distance</b>, not <b>bandwidth</b>; useless on a slow pipe, so it's the trap next to Snow"],
+      ["Migration Hub + Discovery Agent","Inventory and progress tracking","<em>“Assess what's on-prem before migrating”</em> &mdash; it moves nothing; distractor on any transfer question"],
+      ["Data Transfer Terminal","You bring drives to an AWS location","<em>Large dataset, want it uploaded same day, near a terminal</em> &mdash; newer; mostly a distractor on SAA"],
+      ["Transfer Family","Managed SFTP / FTPS / FTP endpoint","<em>Partners upload files to you over SFTP, land in S3 or EFS</em> &mdash; ongoing ingestion, not a migration tool"],
+      ["Application Migration Service","Lift-and-shift servers","<em>Rehost whole VMs to EC2 with minimal downtime</em> &mdash; block-level replication"],
+      ["DMS + SCT","Database migration and schema conversion","<em>Move a database, optionally change engines (Oracle &rarr; Aurora)</em> &mdash; continuous replication keeps source live"]
+    ]
+  },
+
+  /* ---- Quick recall: from Quick Cards. One line per service; an optional third cell is the name hook ---- */
+  {
+    part:"quick",
+    title:"Compute",
+    key:"compute",
+    axis:"",
+    col:"What it is",
+    hook:true,
+    rows:[
+      ["EC2","Resizable virtual servers","Default CloudWatch metrics are hypervisor-level only — CPU, network, disk I/O (instance store), status checks. No memory or disk-space metric until you install the CloudWatch Agent"],
+      ["Lambda","Serverless event functions"],
+      ["Fargate","Serverless container compute"],
+      ["Elastic Beanstalk","Managed app deployment"],
+      ["EC2 Auto Scaling","Adjusts capacity automatically","Default termination order when scaling in: 1) AZ with most instances, 2) oldest launch template/config, 3) closest to next billing hour, 4) random. Cooldown period (default 300 sec) blocks new scaling activities from starting until the previous one finishes, so metrics stabilize before ASG reacts again"],
+      ["Elastic Load Balancing","Distributes incoming traffic","ALB also supports gRPC natively (as a protocol version alongside HTTP/1.1, HTTP/2) — not just plain HTTP/HTTPS. Both ALB and NLB are inherently multi-AZ (you enable ≥2 AZs at creation). Cross-zone load balancing — evenly spreading traffic across all AZs' targets, not just whichever AZ a request lands in — is on by default for ALB"],
+      ["Outposts","AWS on-premises racks"]
+    ]
+  },
+  {
+    part:"quick",
+    title:"Containers",
+    key:"container",
+    axis:"",
+    col:"What it is",
+    hook:true,
+    rows:[
+      ["ECS","AWS container orchestration"],
+      ["EKS","Managed Kubernetes control"],
+      ["ECR","Container image registry"],
+      ["Container Insights","Task/container-level ECS & EKS metrics","Default ECS metrics are cluster/service-level only. On ECS it's a cluster setting (Fargate included, nothing to install); on EKS you deploy the CloudWatch agent as a DaemonSet plus Fluent Bit for logs"]
+    ]
+  },
+  {
+    part:"quick",
+    title:"Storage",
+    key:"storage",
+    axis:"",
+    col:"What it is",
+    hook:true,
+    rows:[
+      ["S3","Durable object storage"],
+      ["S3 Glacier","Archival storage tiers"],
+      ["S3 Transfer Acceleration","Faster long-distance uploads"],
+      ["S3 Storage Lens","Org-wide S3 usage/activity analytics","Free default metrics + paid advanced tier — visibility into usage, activity, and cost-optimization patterns across all buckets/accounts, not a single-bucket tool"],
+      ["EBS","Block volumes, single-AZ","io1/io2 (Provisioned IOPS) = consistent low latency for I/O-intensive DBs, only tier with multi-attach. Cold HDD/sc1 = lowest cost/GB, infrequent access. Distractor tell: \"SR-IOV volumes\" (that's EC2 enhanced networking, not storage) and \"Spot volumes\" (that's an EC2 pricing model, not a volume type) don't exist — and EBS is always single-AZ, never \"multi-AZ resiliency\""],
+      ["Instance Store","Ephemeral local disk"],
+      ["EFS","Shared elastic NFS"],
+      ["FSx for Windows","SMB Windows shares"],
+      ["FSx for Lustre","High-performance HPC filesystem"],
+      ["FSx for NetApp ONTAP","Multi-protocol ONTAP features"],
+      ["FSx for OpenZFS","Managed ZFS filesystem"],
+      ["Volume Gateway – Cached","iSCSI block volumes, cached locally","Frequently-used data cached on-prem, full dataset lives in S3 — minimizes on-prem storage growth"],
+      ["Volume Gateway – Stored","iSCSI block volumes, stored locally","Entire dataset kept on-prem, async snapshots back up to S3 as EBS snapshots"],
+      ["Tape Gateway","Virtual tape library backup","Drop-in replacement for physical tape infrastructure"],
+      ["File Gateway","NFS/SMB files backed by S3","Files land as native S3 objects — no iSCSI, no block volumes"],
+      ["AWS Backup","Centralized backup policies"]
+    ]
+  },
+  {
+    part:"quick",
+    title:"Database",
+    key:"database",
+    axis:"",
+    col:"What it is",
+    hook:true,
+    rows:[
+      ["RDS","Managed relational databases","Default metrics already include FreeableMemory (hypervisor-level, 1-5 min). Enhanced Monitoring adds true OS-level detail (per-process, down to 1 sec) — it upgrades granularity, it doesn't invent memory visibility"],
+      ["RDS Enhanced Monitoring","OS-level metrics from a DB agent","Per-process CPU/memory, OS process list, loadAverage — granularity down to 1 second; lands in CloudWatch Logs, not CloudWatch metrics. Upgrades granularity, doesn't add memory visibility (default metrics already have FreeableMemory)"],
+      ["Performance Insights","Database engine load analysis","DB load as Average Active Sessions — top SQL, waits, hosts, users; the answer when the question asks which query is causing the load"],
+      ["Aurora","High-throughput managed relational"],
+      ["Aurora Serverless v2","Autoscales compute itself"],
+      ["Aurora Auto Scaling","Scales read replicas only"],
+      ["RDS Proxy","Pools database connections"],
+      ["DynamoDB","Serverless NoSQL key-value"],
+      ["DAX","DynamoDB in-memory cache"],
+      ["ElastiCache","Redis / Memcached caching"],
+      ["MemoryDB","Durable Redis database"],
+      ["Redshift","Petabyte data warehouse"],
+      ["DocumentDB","MongoDB-compatible documents","MongoDB-compatible documents"],
+      ["Neptune","Managed graph database","God of the sea → nets and webs → graph"],
+      ["Keyspaces","Managed Apache Cassandra","Keyspace is Cassandra's term → managed Cassandra"],
+      ["Timestream","Time-series database","Time → time-series data, IoT sensors"],
+      ["DMS","Database migration replication"]
+    ]
+  },
+  {
+    part:"quick",
+    title:"Networking &amp; Delivery",
+    key:"network",
+    axis:"",
+    col:"What it is",
+    hook:true,
+    rows:[
+      ["VPC","Isolated virtual network"],
+      ["Subnets","Segmented VPC ranges"],
+      ["Security Groups","Stateful instance firewall"],
+      ["Network ACLs","Stateless subnet firewall"],
+      ["Internet Gateway","VPC internet attachment"],
+      ["NAT Gateway","Outbound-only private egress"],
+      ["Route 53","DNS and routing"],
+      ["CloudFront","Global edge CDN"],
+      ["CloudFront Signed URL","Grants one object per URL"],
+      ["CloudFront Signed Cookie","Grants many objects, one cookie"],
+      ["API Gateway","Managed API frontdoor"],
+      ["Direct Connect","Dedicated private circuit"],
+      ["DX Gateway","Multi-region VPC association"],
+      ["DX + VPN","Encrypted dedicated circuit"],
+      ["Site-to-Site VPN","Encrypted internet tunnel"],
+      ["Client VPN","Remote user access"],
+      ["Transit Gateway","Hub-and-spoke routing"],
+      ["VPC Peering","Two-VPC private link"],
+      ["Gateway Endpoint","Private S3/DynamoDB route"],
+      ["PrivateLink","Private interface endpoints"],
+      ["Egress-Only Gateway","IPv6 outbound only"],
+      ["Global Accelerator","Anycast traffic steering"],
+      ["Network Firewall","Managed VPC firewall"]
+    ]
+  },
+  {
+    part:"quick",
+    title:"Security &amp; Identity",
+    key:"security",
+    axis:"",
+    col:"What it is",
+    hook:true,
+    rows:[
+      ["IAM","Permissions, users, roles"],
+      ["IAM Identity Center","Workforce single sign-on"],
+      ["STS","Temporary security credentials"],
+      ["Cognito","App user authentication"],
+      ["Directory Service","Managed Active Directory"],
+      ["AD Connector","Proxies on-premises directory"],
+      ["KMS","Managed encryption keys"],
+      ["CloudHSM","Dedicated hardware modules"],
+      ["Secrets Manager","Rotating credential storage"],
+      ["Certificate Manager","Free TLS certificates"],
+      ["WAF","Blocks web exploits"],
+      ["Shield","DDoS attack protection"],
+      ["Firewall Manager","Central firewall policy"],
+      ["GuardDuty","Intelligent threat detection"],
+      ["Inspector","Workload vulnerability scanning"],
+      ["Macie","Sensitive data discovery"],
+      ["Detective","Security finding investigation"],
+      ["Security Hub","Aggregated security posture"],
+      ["Artifact","Compliance report portal"],
+      ["Audit Manager","Automated evidence collection"]
+    ]
+  },
+  {
+    part:"quick",
+    title:"Management &amp; Governance",
+    key:"govern",
+    axis:"",
+    col:"What it is",
+    hook:true,
+    rows:[
+      ["CloudWatch","Metrics, logs, alarms"],
+      ["CloudWatch Agent","In-guest OS metrics + log shipping","Installed inside the OS (EC2, on-prem, other clouds) — the only way to get EC2 memory % and disk-space usage; also ships custom logs to CloudWatch Logs"],
+      ["Managed Service for Prometheus","Managed Prometheus-compatible metrics","For teams already using Prometheus/PromQL to monitor containerized workloads (EKS, ECS, K8s) — CloudWatch is the AWS-native default, Prometheus is the answer when the question says \"open-source\" or \"PromQL\""],
+      ["CloudTrail","API activity auditing"],
+      ["Config","Resource configuration compliance"],
+      ["CloudFormation","Infrastructure as code"],
+      ["CDK","Code-defined infrastructure"],
+      ["Systems Manager","Fleet operations tooling"],
+      ["SSM Run Command","Remote command execution, no SSH/RDP","Runs commands/scripts across a fleet via the SSM Agent — replaces the old, Windows-only EC2Config agent (now deprecated in favor of SSM Agent)"],
+      ["Organizations","Multi-account hierarchy"],
+      ["Control Tower","Governed landing zone"],
+      ["Service Control Policies","Account permission guardrails"],
+      ["Trusted Advisor","Best-practice recommendations"],
+      ["Well-Architected Tool","Self-service workload review","Reviews a workload against the 6 pillars (Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimization, Sustainability); Lenses (Serverless, SaaS, etc.) add pillar-specific/workload-specific questions on top"],
+      ["Compute Optimizer","Right-sizing recommendations"],
+      ["Cost Explorer","Historic spend analysis"],
+      ["Budgets","Cost threshold alerts"],
+      ["Resource Access Manager","Cross-account resource sharing"]
+    ]
+  },
+  {
+    part:"quick",
+    title:"Application Integration",
+    key:"integrate",
+    axis:"",
+    col:"What it is",
+    hook:true,
+    rows:[
+      ["SQS","Decoupled message queue","Default message retention is 4 days; configurable range is 1 minute to 14 days max"],
+      ["SNS","Pub/sub fan-out"],
+      ["EventBridge","Event bus routing"],
+      ["Step Functions","Visual workflow orchestration"],
+      ["Amazon MQ","Managed ActiveMQ / RabbitMQ","Lift-and-shift an existing broker — new apps use SQS/SNS"],
+      ["AppSync","Managed GraphQL APIs"],
+      ["SWF","Legacy workflow coordination","The legacy answer — Step Functions is the modern one"]
+    ]
+  },
+  {
+    part:"quick",
+    title:"Analytics",
+    key:"analytics",
+    axis:"",
+    col:"What it is",
+    hook:true,
+    rows:[
+      ["Athena","Serverless S3 querying","Goddess of wisdom → asks questions → SQL straight against S3"],
+      ["Glue","Serverless ETL catalog","Glues sources together → serverless ETL and catalog"],
+      ["EMR","Managed Hadoop / Spark"],
+      ["Kinesis Data Streams","Real-time stream ingestion"],
+      ["Data Firehose","Streaming delivery loader"],
+      ["Managed Flink","Streaming analytics processing"],
+      ["MSK","Managed Apache Kafka"],
+      ["OpenSearch Service","Search and log analytics"],
+      ["QuickSight","Business intelligence dashboards","Quick insight → BI dashboards"],
+      ["Lake Formation","Data lake governance"]
+    ]
+  },
+  {
+    part:"quick",
+    title:"Migration &amp; Transfer",
+    key:"migrate",
+    axis:"",
+    col:"What it is",
+    hook:true,
+    rows:[
+      ["Migration Hub","Migration progress tracking"],
+      ["Application Discovery","On-premises inventory discovery"],
+      ["Application Migration","Lift-and-shift rehosting"],
+      ["DataSync","Automated online transfer"],
+      ["Transfer Family","Managed SFTP / FTPS"],
+      ["Snow Family","Physical data shipping"],
+      ["Data Transfer Terminal","Upload at physical location"],
+      ["Schema Conversion Tool","Converts database schemas"]
+    ]
+  },
+  {
+    part:"quick",
+    title:"Developer Tools",
+    key:"devtools",
+    axis:"",
+    col:"What it is",
+    hook:true,
+    rows:[
+      ["CodeCommit","Managed Git repositories"],
+      ["CodeBuild","Managed build service"],
+      ["CodeDeploy","Automated deployment rollouts"],
+      ["CodePipeline","CI/CD orchestration"],
+      ["X-Ray","Distributed request tracing"]
+    ]
+  },
+  {
+    part:"quick",
+    title:"Edge &amp; End User",
+    key:"edge",
+    axis:"",
+    col:"What it is",
+    hook:true,
+    rows:[
+      ["Lambda@Edge","Edge request processing"],
+      ["CloudFront Functions","Lightweight edge scripting"],
+      ["Local Zones","Latency-sensitive metro compute"],
+      ["WorkDocs","Managed document storage and collaboration","Files with sharing, commenting, versioning and approval workflows — the \"corporate file share\" answer, not app storage (EFS/FSx) or object storage (S3). AWS closed it to new customers in 2024 and ended support April 2025, so treat it as a distractor — it only shows up in older question banks"]
+    ]
+  },
+  {
+    part:"quick",
+    title:"Machine Learning",
+    key:"ml",
+    axis:"",
+    col:"What it is",
+    hook:true,
+    rows:[
+      ["SageMaker","Build, train, deploy","Build, train, deploy your own models"],
+      ["Bedrock","Managed foundation models","Bedrock = the foundation → foundation models via API"]
+    ]
+  },
+
+  /* ---- Lookup tables: from Logs and Multi-AZ Cards. Blank mode hides the answers, not the names ---- */
+  {
+    part:"lookup",
+    title:"Network &amp; delivery",
+    key:"net",
+    axis:"",
+    col:"Destination",
+    hide:"answer",
+    rows:[
+      ["ALB / NLB / CLB access logs","<b>S3</b> only. Per-request access logs for your load balancers."],
+      ["ALB connection logs","<b>S3</b> only. Connection-level TLS detail &mdash; separate feature from access logs."],
+      ["CloudFront access logs","<b>S3</b>. Detailed information about every user request CloudFront receives."],
+      ["Global Accelerator flow logs","<b>S3</b> only."],
+      ["VPC Flow Logs","<b>S3, CloudWatch Logs, Firehose</b>. IP traffic to and from network interfaces in your VPC."],
+      ["Transit Gateway Flow Logs","<b>S3, CloudWatch Logs, Firehose</b>. Same shape as VPC Flow Logs, at the TGW attachment."],
+      ["Route 53 public query logs","<b>CloudWatch Logs</b> only. Queries against a public hosted zone."],
+      ["Route 53 Resolver query logs","<b>S3, CloudWatch Logs, Firehose</b>. DNS queries made <em>from inside</em> your VPC &mdash; a different feature from public query logging, and the one used for exfiltration investigations."],
+      ["Client VPN connection logs","<b>CloudWatch Logs</b> only."]
+    ]
+  },
+  {
+    part:"lookup",
+    title:"Security &amp; audit",
+    key:"sec",
+    axis:"",
+    col:"Destination",
+    hide:"answer",
+    rows:[
+      ["CloudTrail","<b>S3 and CloudWatch Logs</b>. API calls made within your account."],
+      ["AWS Config","<b>S3</b> for configuration history and snapshots, <b>SNS</b> for change notifications."],
+      ["WAF logs","<b>CloudWatch Logs</b> (5 MB per second), <b>S3</b> (5 minute interval), <b>Firehose</b> (Firehose quotas)."],
+      ["Network Firewall logs","<b>S3, CloudWatch Logs, Firehose</b>. Alert, flow and TLS logs."]
+    ]
+  },
+  {
+    part:"lookup",
+    title:"Application &amp; data",
+    key:"app",
+    axis:"",
+    col:"Destination",
+    hide:"answer",
+    rows:[
+      ["S3 server access logs","<b>S3</b>. Detailed records of requests made to a bucket. Hours to deliver, best effort."],
+      ["RDS / Aurora database logs","<b>CloudWatch Logs</b>. Slow query, error and audit logs published from the DB instance."],
+      ["API Gateway access logs","<b>CloudWatch Logs or Firehose</b>."],
+      ["API Gateway execution logs","<b>CloudWatch Logs</b> only."],
+      ["EKS control plane logs","<b>CloudWatch Logs</b> only."],
+      ["Lambda logs","<b>CloudWatch Logs</b>, automatically, with nothing to enable."]
+    ]
+  },
+  {
+    part:"lookup",
+    title:"Multi-AZ and multi-Region",
+    key:"sec",
+    axis:"",
+    col:["Multi-AZ","Multi-Region"],
+    hide:"answer",
+    rows:[
+      ["EBS","<b>No</b> &mdash; always one AZ.","Snapshot copy, cross-Region and cross-account."],
+      ["EBS Multi-Attach (io1/io2 only)","<b>No</b> &mdash; several instances share one volume, but within <b>one AZ</b>. Multi-<em>instance</em>, not multi-AZ, and a common conflation.","No."],
+      ["Instance store","<b>No</b> &mdash; one host.","<b>None.</b> Ephemeral, no snapshots exist."],
+      ["EFS Regional","<b>Yes</b>, by default.","EFS Replication, RPO ~15 min."],
+      ["EFS One Zone","<b>No</b> &mdash; deliberately single AZ.","EFS Replication."],
+      ["FSx Windows","<b>Yes</b> &mdash; active/standby pair with automatic failover.","No native. DFS Replication, DataSync, or backup copy."],
+      ["FSx Lustre","<b>No</b> &mdash; single AZ only.","No native. S3 data repository association; backup copy on Persistent."],
+      ["FSx Lustre Scratch vs Persistent","<b>Scratch</b> has no replication even inside the AZ and no backups &mdash; data is simply gone on failure. <b>Persistent</b> replicates within the AZ and supports backups.","Backup copy on Persistent only."],
+      ["FSx ONTAP","<b>Yes</b>.","<b>SnapMirror</b> &mdash; native, cross-AZ and cross-Region."],
+      ["FSx OpenZFS","<b>Yes</b>.","Backup copy cross-Region."]
+    ]
   }
 ];
 
 const stack = document.getElementById('stack');
+const nav = document.getElementById('parts');
+const partOf = c => PARTS.some(p => p.id === c.part) ? c.part : PARTS[0].id;
+const plain = h => h.replace(/<[^>]*>/g,'');
 
-CLUSTERS.forEach((c, i) => {
-  const sec = document.createElement('section');
-  sec.className = 'cl';
-  sec.style.setProperty('--hue', `var(--c-${c.key})`);
+PARTS.forEach(p => {
+  const list = CLUSTERS.filter(c => partOf(c) === p.id);
+  if (!list.length) return;
 
-  const head = document.createElement('div');
-  head.className = 'cl-head';
-  head.innerHTML = `<span class="num">${String(i+1).padStart(2,'0')}</span><h2>${c.title}</h2>`;
-  sec.append(head);
+  const ph = document.createElement('div');
+  ph.className = 'part';
+  ph.id = `part-${p.id}`;
+  ph.innerHTML = `<h2>${p.title}</h2><p>${p.note}</p>`;
+  stack.append(ph);
+  nav.insertAdjacentHTML('beforeend', `<a href="#part-${p.id}">${p.title} <span>${list.length}</span></a>`);
 
-  if (c.axis) {
-    const axis = document.createElement('p');
-    axis.className = 'axis';
-    axis.innerHTML = `Deciding axis: <b>${c.axis}</b>`;
-    sec.append(axis);
-  }
+  /* sections are numbered within their part */
+  list.forEach((c, i) => {
+    const answers = c.hide === 'answer';
+    const sec = document.createElement('section');
+    sec.className = answers ? 'cl lookup' : 'cl';
+    sec.dataset.part = p.id;
+    sec.style.setProperty('--hue', `var(--c-${c.key})`);
 
-  const tw = document.createElement('div');
-  tw.className = 'tw';
-  const body = c.rows.map(([svc, what]) =>
-    `<tr><td class="svc" data-label="Service"><b tabindex="0" role="button">${svc}</b></td>`
-    + `<td data-label="${c.col.replace(/<[^>]*>/g,'')}">${what}</td></tr>`
-  ).join('');
-  tw.innerHTML =
-    `<table><thead><tr><th>Service</th><th>${c.col}</th></tr></thead><tbody>${body}</tbody></table>`;
-  sec.append(tw);
+    const head = document.createElement('div');
+    head.className = 'cl-head';
+    head.innerHTML = `<span class="num">${String(i+1).padStart(2,'0')}</span><h2>${c.title}</h2>`;
+    sec.append(head);
 
-  stack.append(sec);
+    if (c.axis) {
+      const axis = document.createElement('p');
+      axis.className = 'axis';
+      axis.innerHTML = `Deciding axis: <b>${c.axis}</b>`;
+      sec.append(axis);
+    }
+
+    /* one column per entry in col; cells beyond that are ignored, except a quick-recall hook */
+    const cols = Array.isArray(c.col) ? c.col : [c.col];
+    const tw = document.createElement('div');
+    tw.className = 'tw';
+    const body = c.rows.map(r => {
+      const name = answers ? `<b>${r[0]}</b>` : `<b tabindex="0" role="button">${r[0]}</b>`;
+      const cells = cols.map((h, j) => {
+        const v = r[j+1] === undefined ? '' : r[j+1];
+        if (answers) return `<td class="dest" data-label="${plain(h)}"><span tabindex="0" role="button">${v}</span></td>`;
+        if (j > 0) return `<td class="tell" data-label="${plain(h)}">${v}</td>`;
+        const hook = c.hook && r[2] ? `<span class="hook">${r[2]}</span>` : '';
+        return `<td data-label="${plain(h)}">${v}${hook}</td>`;
+      }).join('');
+      return `<tr><td class="svc" data-label="Service">${name}</td>${cells}</tr>`;
+    }).join('');
+    tw.innerHTML =
+      `<table><thead><tr><th>Service</th>${cols.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table>`;
+    sec.append(tw);
+
+    stack.append(sec);
+  });
 });
 
 document.getElementById('count').textContent = CLUSTERS.length;
 
+/* blank mode: click a hidden name (or, in a lookup table, a hidden answer) to reveal it */
+const HIDDEN = '.cl:not(.lookup) td.svc b, td.dest span';
 function reveal(el){
-  if (document.body.classList.contains('blank')) el.classList.add('on');
+  if (!document.body.classList.contains('blank')) return;
+  el.classList.add('on');
+  if (el.matches('td.svc b')) el.closest('tr').classList.add('on');
 }
 stack.addEventListener('click', e => {
-  const b = e.target.closest('td.svc b');
+  const b = e.target.closest(HIDDEN);
   if (b) reveal(b);
 });
 stack.addEventListener('keydown', e => {
-  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('td.svc b')) {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches(HIDDEN)) {
     e.preventDefault();
     reveal(e.target);
   }
+});
+
+/* filter — hides rows that don't match, then any section or part left with nothing to show */
+const q = document.getElementById('q');
+const allRows = Array.from(stack.querySelectorAll('tbody tr'));
+allRows.forEach(tr => {
+  tr.dataset.k = Array.from(tr.cells, td => td.textContent).join(' ').toLowerCase();
+});
+q.addEventListener('input', () => {
+  const term = q.value.trim().toLowerCase();
+  allRows.forEach(tr => { tr.hidden = !!term && !tr.dataset.k.includes(term); });
+  let any = false;
+  stack.querySelectorAll('section.cl').forEach(sec => {
+    const shown = sec.querySelector('tbody tr:not([hidden])') !== null;
+    sec.hidden = !shown;
+    if (shown) any = true;
+  });
+  stack.querySelectorAll('.part').forEach(ph => {
+    const id = ph.id.replace('part-', '');
+    ph.hidden = !stack.querySelector(`section.cl[data-part="${id}"]:not([hidden])`);
+  });
+  document.body.classList.toggle('empty', !any);
 });
 
 /* shuffle — within each cluster's table; toggling off restores the original order */
@@ -504,10 +1372,10 @@ const hint = document.getElementById('hint');
 btn.addEventListener('click', () => {
   const on = document.body.classList.toggle('blank');
   btn.setAttribute('aria-pressed', String(on));
-  if (!on) document.querySelectorAll('td.svc b.on').forEach(b => b.classList.remove('on'));
+  if (!on) document.querySelectorAll('td.svc b.on, td.dest span.on, tr.on').forEach(el => el.classList.remove('on'));
   hint.innerHTML = on
-    ? 'Names hidden. Read across the row and name it before you click &mdash; at professional level the row you can describe but not name is the one that will cost you.'
-    : 'Built up section by section while studying &mdash; only what has actually been covered. Turn on <b>Blank mode</b> to hide the names and work backward from the behavior.';
+    ? 'Names hidden. Read across the row and name it before you click &mdash; at professional level the row you can describe but not name is the one that will cost you. In the lookup tables it is the answers that are hidden.'
+    : 'One deck for SAP-C03: professional notes, contrast sets, quick recall and lookup tables. Turn on <b>Blank mode</b> to hide the names and work backward from the behavior.';
 });
 </script>
 </body>
