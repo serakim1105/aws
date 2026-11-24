@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <title>AWS Study Decks</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+Condensed:wght@700&family=IBM+Plex+Sans:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+Condensed:wght@700&family=IBM+Plex+Sans:wght@400;500&display=swap" crossorigin>
 <style>
   :root{--ground:#F4F6F9;--surface:#FFFFFF;--ink:#0F141B;--muted:#59647A;--faint:#8A94A6;--line:#DDE3EC;--accent:#B4560A;--focus:#2E73B8;--quick:#20629F;--concept:#C01E36;--pro:#6B36D6;--logs:#0E7C86;}
   @media (prefers-color-scheme: dark){:root{--ground:#0D1117;--surface:#151B24;--ink:#E4E9F1;--muted:#96A1B4;--faint:#6C7789;--line:#242C38;--accent:#F0912F;--focus:#6BA6E8;--quick:#5BA3E8;--concept:#F2647A;--pro:#A98BFF;--logs:#3ECBD4;}}
@@ -47,5 +47,18 @@
   <p class="how"><b>How to use it:</b> run Quick recall once to find the names you can't recall. Then spend your time in the Contrast sets &mdash; reproduce a table from blank, check, repeat. Definitions are the cheap part; telling neighbours apart is what the exam grades. Professional notes are filled in as each topic gets studied rather than up front. The Lookup tables are a reference rather than a pass &mdash; check them when a question turns on where a log goes, or whether a storage service survives an AZ.</p>
   <p class="old">Earlier decks, now folded into the one above and no longer updated: <a href="aws-quick-cards.html">Quick Cards</a>, <a href="aws-concept-cards.html">Concept Cards</a>, <a href="aws-logs-cards.html">Logs and Multi-AZ Cards</a>.</p>
 </div>
+<script>
+/* offline copy — sw.js saves this page, the deck and their fonts, so they still open with no connection.
+   The font stylesheet link in the head is marked crossorigin so the font files appear in the list sent to the worker. */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+    Promise.all([navigator.serviceWorker.ready, document.fonts ? document.fonts.ready : null]).then(([reg]) => {
+      const loaded = performance.getEntriesByType('resource').map(entry => entry.name);
+      reg.active.postMessage({ save: [location.href.split('#')[0], ...loaded] });
+    }).catch(() => {});
+  });
+}
+</script>
 </body>
 </html>

@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AWS Professional Cards</title>
 <meta name="description" content="AWS SAP-C03 study deck: professional notes, contrast sets, quick recall and lookup tables in one place.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" crossorigin>
 <style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found]){display:none!important}</style>
 <style>
   :root{
@@ -1411,6 +1411,19 @@ btn.addEventListener('click', () => {
     ? 'Names hidden. Read across the row and name it before you click &mdash; at professional level the row you can describe but not name is the one that will cost you. In the lookup tables it is the answers that are hidden.'
     : 'One deck for SAP-C03: professional notes, contrast sets, quick recall and lookup tables. Turn on <b>Blank mode</b> to hide the names and work backward from the behavior.';
 });
+
+/* offline copy — sw.js saves this page and its fonts, so the deck still opens and reloads with no connection.
+   The page also tells the worker what it has already loaded, which is what gets the very first visit saved.
+   The font stylesheet link in the head is marked crossorigin for this: without it the browser hides the font files from that list. */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+    Promise.all([navigator.serviceWorker.ready, document.fonts ? document.fonts.ready : null]).then(([reg]) => {
+      const loaded = performance.getEntriesByType('resource').map(entry => entry.name);
+      reg.active.postMessage({ save: [location.href.split('#')[0], ...loaded] });
+    }).catch(() => {});
+  });
+}
 </script>
 </body>
 </html>
